@@ -37,7 +37,8 @@ form.addEventListener('submit', async (e) => {
   };
 
   try {
-    const res = await fetch('https://your-railway-url.up.railway.app/register', {
+    //const res = await fetch('https://icdcgr8server-production.up.railway.app', {
+    const res = await fetch('http://localhost:3000', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(player)
