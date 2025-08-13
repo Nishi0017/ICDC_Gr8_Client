@@ -25,8 +25,8 @@ function loadImage(src) {
 const imagePaths = {
   tankImg1: 'Images/tank1-body.png',
   tankImg2: 'Images/tank2-body.png',
-  turretImg1: 'images/tank1-kuti.png',
-  turretImg2: 'images/tank2-kuti.png'
+  turretImg1: 'Images/tank1-kuti.png',
+  turretImg2: 'Images/tank2-kuti.png'
 };
 
 // ======================
@@ -183,7 +183,7 @@ function showWinner(text) {
   winText.innerText = text;
   winText.style.opacity = 1;
 
-  const sound = document.getElementById("winSound");
+  //const sound = document.getElementById("winSound");
   sound.currentTime = 0;
   sound.play();
 
