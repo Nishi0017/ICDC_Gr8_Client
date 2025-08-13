@@ -8,7 +8,7 @@ const selectedGame = params.get("game");
 // ゲームごとの設定
 const gamesConfig = {
     "snake-game": { img: "Image/snake.png", lights: 4 },
-    "tank-game": { img: "Image/tank.png", lights: 2 },
+    "tank-game_test2": { img: "Image/tank.png", lights: 2 },
 };
 
 // 選択ゲーム情報を設定

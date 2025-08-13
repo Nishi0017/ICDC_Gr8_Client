@@ -88,7 +88,7 @@ function stopRotateWheel() {
     setTimeout(() => {
         popup.style.display = "none";
         // 選ばれたゲームを準備ページへ渡す
-        window.location.href = `ICDC_Gr8_Client/ready/ready.html?game=${encodeURIComponent(selected)}`;
+        window.location.href = `../ready/ready.html?game=${encodeURIComponent(selected)}`;
     }, 2000);
 
     spinning = false;
