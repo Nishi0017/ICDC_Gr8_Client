@@ -1,94 +1,57 @@
-// Element references
-const form = document.getElementById('registerForm');
-const nameInput = document.getElementById('playerName');
-const gameSelect = document.getElementById('gameSelect');
-const resultBox = document.getElementById('result');
-const nameError = document.getElementById('nameError');
+const buttons = document.querySelectorAll(".menu-btn");
+let currentIndex = 0;
+const playerCountSpan = document.getElementById("playerCount");
 
-// Validation function
-function validateName(name){
-  const trimmed = name.trim();
-  if (!trimmed) return "Please enter your player name.";
-  if (trimmed.length < 2) return "Name must be at least 2 characters.";
-  return "";
+const API_URL = "https://icdcgr8server-production.up.railway.app/players"; // players.json取得API
+
+function updateHighlight() {
+  buttons.forEach((btn, i) => {
+    btn.classList.toggle("active", i === currentIndex);
+  });
 }
 
-// フォーム送信処理
-form.addEventListener('submit', async (e) => {
-  e.preventDefault();
-  nameError.style.display = 'none';
-  resultBox.style.display = 'none';
-
-  const name = nameInput.value;
-  const game = gameSelect.value;
-
-  const err = validateName(name);
-  if (err){
-    nameError.textContent = err;
-    nameError.style.display = 'block';
-    nameInput.focus();
-    return;
-  }
-
-  const player = {
-    name: name.trim(),
-    game,
-    timestamp: new Date().toISOString()
-  };
-
+// プレイヤー人数取得
+async function fetchPlayerCount() {
   try {
-    // ★ RailwayのURL + POST
-    const res = await fetch('https://icdcgr8server-production.up.railway.app/', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(player)
-    });
-
-    if (!res.ok) throw new Error('Failed to register');
-
+    const res = await fetch(API_URL);
+    if (!res.ok) throw new Error("Failed to fetch player data");
     const data = await res.json();
+    playerCountSpan.textContent = data.length;
+  } catch (err) {
+    console.error(err);
+    playerCountSpan.textContent = "Error";
+  }
+}
 
-    resultBox.innerHTML = `
-      <strong>${data.message}</strong><br />
-      Player Name: ${escapeHtml(player.name)}<br />
-      Selected Game: ${escapeHtml(displayGameName(player.game))}<br />
-      Registered At: ${new Date(player.timestamp).toLocaleString()}
-    `;
-    resultBox.style.display = 'block';
-  } catch (error) {
-    resultBox.innerHTML = `<strong style="color:red;">Error:</strong> ${error.message}`;
-    resultBox.style.display = 'block';
+// キー操作
+document.addEventListener("keydown", (e) => {
+  if (e.key === "a" || e.key === "A") {
+    currentIndex = (currentIndex - 1 + buttons.length) % buttons.length;
+    updateHighlight();
+  } else if (e.key === "d" || e.key === "D") {
+    currentIndex = (currentIndex + 1) % buttons.length;
+    updateHighlight();
+  } else if (e.key === "w" || e.key === "W") {
+    const link = buttons[currentIndex].dataset.link;
+    window.location.href = link;
+  } else if (e.key === "x" || e.key === "X") {
+    fetchPlayerCount();
   }
 });
 
+// マウスクリックでも遷移可能
+buttons.forEach((btn, i) => {
+  btn.addEventListener("click", () => {
+    currentIndex = i;
+    updateHighlight();
+    const link = btn.dataset.link;
+    window.location.href = link;
+  });
+});
 
-// Display name for game options
-function displayGameName(key){
-  const map = {
-    'dance-mat': '3x3 Dance Mat Game',
-    'rocket-coop': 'Cooperative Rocket Game',
-    'multiplayer-snake': 'Multiplayer Snake',
-    'custom': 'Other (Custom)'
-  };
-  return map[key] || key;
-}
+// 初期処理
+updateHighlight();
+fetchPlayerCount();
 
-// Simple HTML escape
-function escapeHtml(s){
-  return String(s)
-    .replaceAll('&','&amp;')
-    .replaceAll('<','&lt;')
-    .replaceAll('>','&gt;')
-    .replaceAll('"','&quot;')
-    .replaceAll("'",'&#39;');
-}
-
-// Populate from previous registration if available (optional)
-(function populateFromStorage(){
-  const raw = localStorage.getItem('playerRegistration');
-  if (raw){
-    const p = JSON.parse(raw);
-    if (p.name) nameInput.value = p.name;
-    if (p.game) gameSelect.value = p.game;
-  }
-})();
+// 一定間隔で人数更新（10秒ごと）
+setInterval(fetchPlayerCount, 10000);

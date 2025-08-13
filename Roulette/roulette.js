@@ -12,15 +12,13 @@ async function loadPlayers() {
     try {
         const res = await fetch("https://icdcgr8server-production.up.railway.app/players");
         const data = await res.json();
-        // players.json が [{name:"○○"},...] 形式なら
-        items = data.map(p => p.name);
+        items = data.map(p => p.game);
         arc = Math.PI * 2 / items.length;
         drawWheel();
     } catch (err) {
         console.error("プレイヤー読み込み失敗", err);
     }
 }
-
 
 let startAngle = 0;
 let arc = Math.PI * 2 / items.length;
@@ -67,7 +65,6 @@ function rotateWheel() {
         stopRotateWheel();
         return;
     }
-    // 減速感を自然にする easing
     let spinAngleChange = easeOutCubic(spinTime, spinAngle, 0 - spinAngle, spinTimeTotal);
     startAngle += (spinAngleChange * Math.PI / 180);
     drawWheel();
@@ -82,24 +79,21 @@ function stopRotateWheel() {
 
     resultDisplay.textContent = "結果: " + selected;
 
-    // ポップアップ演出
     popupText.textContent = selected;
     popup.style.display = "flex";
 
-    // 「ドドン！」効果音
     const dodonSound = new Audio("dodon.mp3");
     dodonSound.play();
 
-    // 2秒後に閉じる
     setTimeout(() => {
         popup.style.display = "none";
+        // 選ばれたゲームを準備ページへ渡す
+        window.location.href = `/ready/ready.html?game=${encodeURIComponent(selected)}`;
     }, 2000);
 
     spinning = false;
 }
 
-
-// cubic easing（スムーズ減速）
 function easeOutCubic(t, b, c, d) {
     t /= d;
     t--;
@@ -107,15 +101,13 @@ function easeOutCubic(t, b, c, d) {
 }
 
 spinBtn.addEventListener("click", () => {
-    if (spinning) return; // 連打防止
+    if (spinning) return;
     spinning = true;
 
-    spinAngle = Math.random() * 150 // ゆっくりめ初速
+    spinAngle = Math.random() * 150;
     spinTime = 0;
-    spinTimeTotal = Math.random() * 5000 + 6000; // 長め減速
+    spinTimeTotal = Math.random() * 5000 + 6000;
     rotateWheel();
 });
 
-// 初期描画
 loadPlayers();
-

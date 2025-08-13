@@ -1,0 +1,18 @@
+body {
+  margin: 0;
+  overflow: hidden;
+  background-color: black;
+}
+
+#winnerText {
+  position: absolute;
+  top: 40%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 80px;
+  color: yellow;
+  font-weight: bold;
+  text-shadow: 0 0 20px red, 0 0 40px orange;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}

@@ -1,42 +1,24 @@
-<!doctype html>
-<html lang="en">
+<!DOCTYPE html>
+<html lang="ja">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Player Registration</title>
-  <link rel="stylesheet" href="style.css" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>メニュー</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <header class="site-header" role="banner">
-    <h1 class="site-title">Interactive Game Collection</h1>
-  </header>
+  <h1>メニュー</h1>
 
-  <main class="card" role="main" aria-labelledby="title">
-    <h2 id="title">Player Registration</h2>
-    <p class="lead">Before starting the game, please register your player name and select a game.</p>
+  <div id="playerCountBox">
+    登録済み人数: <span id="playerCount">--</span> 人
+  </div>
 
-    <form id="registerForm" autocomplete="off" novalidate>
-      <div class="field">
-        <label for="playerName">Player Name <span aria-hidden="true">*</span></label>
-        <input id="playerName" name="playerName" type="text" placeholder="any name" maxlength="24" required aria-required="true" />
-        <div id="nameError" class="error" aria-live="polite" style="display:none"></div>
-      </div>
+  <div class="button-container">
+    <button class="menu-btn active" data-link="register.html">登録ページ</button>
+    <button class="menu-btn" data-link="Roulette/roulette.html">ルーレットページ</button>
+  </div>
 
-      <div class="field">
-        <label for="gameSelect">Game to Play</label>
-        <select id="gameSelect" name="gameSelect" aria-label="Game to Play">
-          <option value="snake-game">Snake Game</option>
-          <option value="tank-game">Tank Game</option>
-        </select>
-      </div>
-
-      <div class="controls">
-        <button id="submitBtn" type="submit">Register & Start Game</button>
-      </div>
-    </form>
-
-    <div id="result" class="result" style="display:none" aria-live="polite"></div>
-  </main>
+  <p class="hint">A/Dで選択 &nbsp; Wで決定 &nbsp; Xで人数更新</p>
 
   <script src="script.js"></script>
 </body>
