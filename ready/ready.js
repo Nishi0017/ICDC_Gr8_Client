@@ -35,6 +35,7 @@ function checkStart() {
     }
 }
 
+
 function startCountdown() {
     countdownValue = 3;
     countdownEl.textContent = countdownValue;
@@ -47,7 +48,11 @@ function startCountdown() {
             countdownEl.textContent = "GO!";
             setTimeout(() => {
                 // 選んだゲームページへ遷移
-                window.location.href = selectedGame + ".html";
+               const pathMap = {
+                    "tank-game": "../TankGame/tank.html",
+                    "snake-game": "../SnakeGame/snake.html",
+                };
+                window.location.href = pathMap[selectedGame] || "default.html";
             }, 1000);
         }
     }, 1000);
