@@ -13,7 +13,7 @@ function validateName(name){
   return "";
 }
 
-// Form submit handler
+// フォーム送信処理
 form.addEventListener('submit', async (e) => {
   e.preventDefault();
   nameError.style.display = 'none';
@@ -37,8 +37,8 @@ form.addEventListener('submit', async (e) => {
   };
 
   try {
-    //const res = await fetch('https://icdcgr8server-production.up.railway.app', {
-    const res = await fetch('http://localhost:3000', {
+    // ★ RailwayのURL + POST
+    const res = await fetch('https://icdcgr8server-production.up.railway.app/', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(player)
@@ -60,6 +60,7 @@ form.addEventListener('submit', async (e) => {
     resultBox.style.display = 'block';
   }
 });
+
 
 // Display name for game options
 function displayGameName(key){
