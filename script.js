@@ -55,5 +55,10 @@ buttons.forEach((btn, i) => {
 updateHighlight();
 fetchPlayerCount();
 
+// キーマッピングの初期化
+localStorage.removeItem("inputMapping");
+console.log("🗑️ inputMapping deleted");
+
+
 // 一定間隔で人数更新（10秒ごと）
 setInterval(fetchPlayerCount, 10000);

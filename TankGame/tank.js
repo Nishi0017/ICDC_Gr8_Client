@@ -73,6 +73,7 @@ class Tank {
   }
 
   rotateTurretAuto() {
+    console.log("🔄 自動旋回中");
     this.turretAngle += 0.02 * this.turretDirection;
     if (!this.flipped) {
       if (this.turretAngle <= -Math.PI) { this.turretAngle = -Math.PI; this.turretDirection = 1; }
@@ -183,9 +184,8 @@ function showWinner(text) {
   winText.innerText = text;
   winText.style.opacity = 1;
 
-  //const sound = document.getElementById("winSound");
-  sound.currentTime = 0;
-  sound.play();
+  const sound = document.getElementById("winSound");
+  if (sound) { sound.currentTime = 0; sound.play().catch(()=>{}); }
 
   setTimeout(() => {
     alert(text);
@@ -230,8 +230,8 @@ Promise.all([
   loadImage(imagePaths.turretImg2)
 ])
 .then(([tankImg1, tankImg2, turretImg1, turretImg2]) => {
-  tank1 = new Tank(100, tankImg1, turretImg1, { angleHold: 'q', forward: 'w', backward: 's', shoot: 'e' }, false);
-  tank2 = new Tank(canvas.width - 150, tankImg2, turretImg2, { angleHold: 'u', forward: 'i', backward: 'k', shoot: 'o' }, true);
+  tank1 = new Tank(100, tankImg1, turretImg1, { angleHold: 'q', forward: 'e', backward: 'w', shoot: 'a' }, false);
+  tank2 = new Tank(canvas.width - 150, tankImg2, turretImg2, { angleHold: 's', forward: 'z', backward: 'd', shoot: 'x' }, true);
   update(tank1, tank2);
 })
 .catch(err => console.error(err));

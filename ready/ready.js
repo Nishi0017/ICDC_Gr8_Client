@@ -8,8 +8,6 @@ const matContainer = document.getElementById("mat-container");
 const instructionEl = document.getElementById("instruction");
 
 let currentConfigIndex = 0;
-let singlePressStartTime = null;
-const holdTimeRequired = 3000; // 3秒間
 const padOrder = [0,1,2,3,4,5,6,7,8]; // 光らせる順番
 let inputMapping = Array(9).fill(null); // 元idx → 新idx の変換マップ
 
@@ -43,7 +41,7 @@ function createPadGrid(playerNames = []) {
   matContainer.innerHTML = "";
   let layout = [];
   let namePositions = [];
-  let padSymbols = {}; // パッド番号 → 表示文字
+  let padSymbols = {};
 
   if (numPlayers === 1) {
     matContainer.style.gridTemplateColumns = "repeat(3, 80px)";
@@ -87,13 +85,11 @@ function createPadGrid(playerNames = []) {
        4, "e",  5, "",  6, "e",  7, ""
     ];
     namePositions = [0, 2, 4, 6];
-    padSymbols = {}; // 必要なら追加
+    padSymbols = {};
   }
 
   let nameIndexMap = {};
-  namePositions.forEach((pos, i) => {
-    nameIndexMap[pos] = i;
-  });
+  namePositions.forEach((pos, i) => { nameIndexMap[pos] = i; });
 
   layout.forEach((v) => {
     const cell = document.createElement("div");
@@ -101,7 +97,6 @@ function createPadGrid(playerNames = []) {
     cell.style.flexDirection = "column";
     cell.style.alignItems = "center";
 
-    // 名前表示
     if (typeof v === "number" && namePositions.includes(v)) {
       const nameIdx = nameIndexMap[v];
       const nameDiv = document.createElement("div");
@@ -115,18 +110,17 @@ function createPadGrid(playerNames = []) {
       cell.appendChild(spacer);
     }
 
-    // パッド本体
     const pad = document.createElement("div");
     pad.classList.add("pad");
     if (v === "" || v === " ") {
       pad.classList.add("empty");
     } 
     else if (typeof v === "string" && v === "e") {
-      pad.classList.add("extra"); // 表示専用パッド
+      pad.classList.add("extra");
       pad.textContent = "E";
     } 
     else {
-      pad.dataset.index = v; // 操作対象
+      pad.dataset.index = v;
       pad.textContent = padSymbols[v] || "";
     }
 
@@ -137,14 +131,14 @@ function createPadGrid(playerNames = []) {
 
 // ===== パッド操作 =====
 function highlightPad(idx) {
-  document.querySelectorAll(".pad").forEach(p => {
+  document.querySelectorAll(".pad[data-index]").forEach(p => {
     p.classList.remove("active");
     if (parseInt(p.dataset.index) === idx) {
       p.classList.add("active");
     }
   });
 }
-
+/*
 function markConfigured(idx) {
   const pad = document.querySelector(`.pad[data-index='${idx}']`);
   if (pad) {
@@ -152,36 +146,42 @@ function markConfigured(idx) {
     pad.classList.add("configured");
   }
 }
+*/
 
 // ===== 設定ステップ =====
 function startConfigStep() {
   if (currentConfigIndex >= padOrder.length) {
     instructionEl.textContent = "すべての設定が完了しました！";
     console.log("変換マッピング:", inputMapping);
+    localStorage.setItem("inputMapping", JSON.stringify(inputMapping));
     return;
   }
+
   const targetPad = padOrder[currentConfigIndex];
   highlightPad(targetPad);
-  instructionEl.textContent = `光っているパネル(${targetPad + 1})を3秒間踏んでください`;
+  instructionEl.textContent = `光っているパネル(${targetPad + 1})を踏んでください`;
 }
 
+// ===== 入力処理 =====
 function handlePadInput(states) {
   const activePads = states.map((v, i) => v === 1 ? i : null).filter(v => v !== null);
-  const targetPad = padOrder[currentConfigIndex];
+  if (activePads.length !== 1) return; // 1つだけ踏まれた場合のみ処理
 
-  if (activePads.length === 1 && activePads[0] === targetPad) {
-    if (singlePressStartTime === null) {
-      singlePressStartTime = Date.now();
-    } else if (Date.now() - singlePressStartTime >= holdTimeRequired) {
-      inputMapping[targetPad] = currentConfigIndex;
-      markConfigured(targetPad);
-      currentConfigIndex++;
-      singlePressStartTime = null;
-      startConfigStep();
-    }
-  } else {
-    singlePressStartTime = null;
+  const pressedPad = activePads[0];
+
+  // すでに登録済みなら無視
+  if (inputMapping[pressedPad] !== null) {
+    console.log(`⚠️ パッド ${pressedPad + 1} はすでに登録されています`);
+    return;
   }
+
+  // マッピング登録
+  inputMapping[pressedPad] = currentConfigIndex;
+  console.log(`✅ パッド ${pressedPad + 1} を ${currentConfigIndex} に割り当て`);
+  //markConfigured(pressedPad);
+
+  currentConfigIndex++;
+  startConfigStep();
 }
 
 // ===== 入力マッピング適用 =====
@@ -190,9 +190,7 @@ function remapInput(states) {
   states.forEach((v, i) => {
     if (v === 1) {
       const newIdx = inputMapping[i];
-      if (newIdx !== null) {
-        remapped[newIdx] = 1;
-      }
+      if (newIdx !== null) remapped[newIdx] = 1;
     }
   });
   return remapped;
