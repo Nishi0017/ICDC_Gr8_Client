@@ -13,29 +13,40 @@
 
   <main class="card" role="main" aria-labelledby="title">
     <h2 id="title">Player Registration</h2>
-    <p class="lead">Before starting the game, please register your player name and select a game.</p>
+    <p class="lead">Use Q/W/E/A/S/D/Z/X/C keys to navigate and enter your name.</p>
 
-    <form id="registerForm" autocomplete="off" novalidate>
-      <div class="field">
-        <label for="playerName">Player Name <span aria-hidden="true">*</span></label>
-        <input id="playerName" name="playerName" type="text" placeholder="any name" maxlength="24" required aria-required="true" />
-        <div id="nameError" class="error" aria-live="polite" style="display:none"></div>
-      </div>
+    <div class="field highlight" id="usernameField">
+      <label for="playerName">Player Name <span aria-hidden="true">*</span></label>
+      <input id="playerName" name="playerName" type="text" maxlength="24" readonly />
+      <div id="nameError" class="error" aria-live="polite" style="display:none"></div>
+    </div>
 
-      <div class="field">
-        <label for="gameSelect">Game to Play</label>
-        <select id="gameSelect" name="gameSelect" aria-label="Game to Play">
-          <option value="snake-game">Snake Game</option>
-          <option value="tank-game">Tank Game</option>
-        </select>
+    <div class="field highlight" id="gameField">
+      <label for="gameSelect">Game to Play</label>
+      <div id="gameSelect" class="select-box" tabindex="0">
+        Snake Game
       </div>
+      <div id="gameList" class="game-list hidden">
+        <div data-value="snake-game">Snake Game</div>
+        <div data-value="tank-game">Tank Game</div>
+      </div>
+    </div>
 
-      <div class="controls">
-        <button id="submitBtn" type="submit">Register & Start Game</button>
-      </div>
-    </form>
+    <div class="controls highlight" id="submitField">
+      <button id="submitBtn">Register & Start Game</button>
+    </div>
 
     <div id="result" class="result" style="display:none" aria-live="polite"></div>
+
+    <!-- 仮想キーボード -->
+    <div id="virtualKeyboard" class="vk hidden">
+      <div class="vk-row" data-row="0"><span>A</span><span>B</span><span>C</span><span>D</span><span>E</span><span>F</span></div>
+      <div class="vk-row" data-row="1"><span>G</span><span>H</span><span>I</span><span>J</span><span>K</span><span>L</span></div>
+      <div class="vk-row" data-row="2"><span>M</span><span>N</span><span>O</span><span>P</span><span>Q</span><span>R</span></div>
+      <div class="vk-row" data-row="3"><span>S</span><span>T</span><span>U</span><span>V</span><span>W</span><span>X</span></div>
+      <div class="vk-row" data-row="4"><span>Y</span><span>Z</span></div>
+    </div>
+
   </main>
 
   <script src="register.js"></script>
