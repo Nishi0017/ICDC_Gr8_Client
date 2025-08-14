@@ -7,9 +7,34 @@
     <link rel="stylesheet" href="roulette.css">
 </head>
 <body>
-    <h1 id="result">結果: ？</h1>
-    <canvas id="wheelCanvas" width="500" height="500"></canvas>
-    <button id="spinBtn">回す</button>
+    <div id="countdown" class="countdown hidden">
+        <div class="countdown-text">カウントダウン</div>
+        <div class="countdown-number" id="countdownNumber">3</div>
+    </div>
+
+    <div id="gameRoulette" class="roulette-container">
+        <h2>ゲーム選択</h2>
+        <canvas id="gameWheelCanvas" width="500" height="500"></canvas>
+        <div id="gameResult" class="result-display hidden"></div>
+    </div>
+
+    <div id="playerSelectionRoulette" class="roulette-container hidden">
+        <h2>プレイヤー選択</h2>
+        <canvas id="playerSelectionWheelCanvas" width="500" height="500"></canvas>
+        <div id="playerSelectionResult" class="result-display hidden"></div>
+    </div>
+
+    <div id="musicRoulette" class="roulette-container hidden">
+        <h2>音楽選択</h2>
+        <canvas id="musicWheelCanvas" width="500" height="500"></canvas>
+        <div id="musicResult" class="result-display hidden"></div>
+    </div>
+
+    <div id="finalResult" class="final-result hidden">
+        <h1>決定完了！</h1>
+        <div id="finalResultContent"></div>
+        <button id="startGameBtn">ゲーム開始</button>
+    </div>
 
     <!-- 大々的なポップアップ -->
     <div id="popup">

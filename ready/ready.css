@@ -1,43 +1,45 @@
 body {
-  text-align: center;
   font-family: sans-serif;
-  background-color: #f5f5f5;
+  text-align: center;
+  background-color: #f0f0f0;
 }
 
-.image-container {
-  margin: 20px auto;
+#instruction {
+  margin-top: 20px;
+  font-size: 1.5em;
 }
 
-.instruction-img {
-  max-width: 80%;
-  height: auto;
-  border: 2px solid #ccc;
-  border-radius: 8px;
-}
-
-.light-container {
-  display: flex;
+#mat-container {
+  display: grid;
   justify-content: center;
-  gap: 30px;
+  align-items: center;
+  gap: 10px;
   margin-top: 30px;
 }
 
-.light {
+.pad {
   width: 80px;
   height: 80px;
-  border-radius: 50%;
-  background-color: #555;
-  transition: background-color 0.3s;
-}
-
-.light.active {
-  background-color: yellow;
-  box-shadow: 0 0 20px yellow;
-}
-
-.countdown {
-  font-size: 2rem;
-  margin-top: 30px;
-  color: red;
+  background-color: #ccc;
+  border-radius: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   font-weight: bold;
+  font-size: 1.2em;
+  transition: background-color 0.3s, transform 0.2s;
+}
+
+.pad.active {
+  background-color: yellow;
+  transform: scale(1.1);
+}
+
+.pad.configured {
+  background-color: lightgreen;
+}
+
+.empty {
+  background-color: transparent;
+  border: none;
 }

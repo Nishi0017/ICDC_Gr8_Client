@@ -22,22 +22,123 @@ body {
   -moz-osx-font-smoothing:grayscale;
 }
 
-/* 上部の小さな結果表示（補助） */
-h1#result {
-  margin: 18px 0 6px;
-  font-size: 1.8rem;
-  color: var(--result-color);
-  transition: transform 0.5s ease, color 0.5s ease;
-  font-weight:700;
-  letter-spacing: .02em;
+/* カウントダウン */
+.countdown {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.9);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
 }
-h1#result.animate {
-  transform: scale(1.15);
-  color: #ff4500;
+
+.countdown-text {
+  font-size: 2rem;
+  color: white;
+  margin-bottom: 20px;
+}
+
+.countdown-number {
+  font-size: 8rem;
+  font-weight: bold;
+  color: var(--accent);
+  animation: countdownPulse 1s ease-in-out;
+}
+
+@keyframes countdownPulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
+
+/* ルーレットコンテナ */
+.roulette-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.5s ease;
+}
+
+.roulette-container h2 {
+  font-size: 2rem;
+  color: var(--accent);
+  margin-bottom: 20px;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+/* 結果表示 */
+.result-display {
+  margin-top: 20px;
+  padding: 15px 30px;
+  background: var(--accent);
+  color: white;
+  border-radius: 10px;
+  font-size: 1.5rem;
+  font-weight: bold;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+
+/* 最終結果 */
+.final-result {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--bg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 5000;
+}
+
+.final-result h1 {
+  font-size: 3rem;
+  color: var(--accent);
+  margin-bottom: 30px;
+}
+
+#finalResultContent {
+  font-size: 1.5rem;
+  margin-bottom: 40px;
+  line-height: 1.6;
+}
+
+#startGameBtn {
+  padding: 15px 30px;
+  font-size: 1.2rem;
+  background: var(--accent);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+#startGameBtn:hover {
+  background: var(--accent-dark);
+  transform: translateY(-2px);
+}
+
+/* ユーティリティ */
+.hidden {
+  display: none !important;
 }
 
 /* ルーレットキャンバス */
-#wheelCanvas {
+canvas {
   background: white;
   width: 500px;
   height: 500px;
@@ -48,23 +149,6 @@ h1#result.animate {
   margin: 18px auto 12px;
   display: block;
 }
-
-/* 回すボタン */
-#spinBtn {
-  padding: 12px 28px;
-  font-size: 1.05rem;
-  cursor: pointer;
-  background: var(--accent);
-  border: none;
-  border-radius: 10px;
-  color: white;
-  box-shadow: 0 8px 18px rgba(0,0,0,0.18);
-  transition: transform .12s ease, background .2s ease, box-shadow .2s ease;
-  font-weight:700;
-  letter-spacing:.02em;
-}
-#spinBtn:active { transform: translateY(2px) scale(.995); }
-#spinBtn:hover { background: var(--accent-dark); }
 
 /* ------------------
    大々的なポップアップ（全画面） 
@@ -162,10 +246,12 @@ h1#result.animate {
 
 /* 小さい画面向け調整 */
 @media (max-width:600px) {
-  #popupText { font-size: 3rem; padding: 6px 12px; }
-  #spinBtn { padding: 10px 18px; font-size: .98rem; }
-  h1#result { font-size: 1.2rem; }
-  #wheelCanvas { width: calc(100vw - 36px); height: calc(100vw - 36px); }
+  .countdown-number { font-size: 5rem; }
+  .countdown-text { font-size: 1.5rem; }
+  .roulette-container h2 { font-size: 1.5rem; }
+  .final-result h1 { font-size: 2rem; }
+  #finalResultContent { font-size: 1.2rem; }
+  canvas { width: calc(100vw - 36px); height: calc(100vw - 36px); }
 }
 
 /* 補助：フェードイン／アウト（必要ならJSでクラス付与） */

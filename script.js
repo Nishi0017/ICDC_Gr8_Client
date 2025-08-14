@@ -10,6 +10,8 @@ function updateHighlight() {
   });
 }
 
+ 
+
 // プレイヤー人数取得
 async function fetchPlayerCount() {
   try {

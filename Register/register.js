@@ -1,7 +1,8 @@
-// register.js
 const nameInput = document.getElementById('playerName');
 const gameSelectBox = document.getElementById('gameSelect');
 const gameList = document.getElementById('gameList');
+const musicSelectBox = document.getElementById('musicSelect');
+const musicList = document.getElementById('musicList');
 const submitBtn = document.getElementById('submitBtn');
 const resultBox = document.getElementById('result');
 const nameError = document.getElementById('nameError');
@@ -10,6 +11,7 @@ const vk = document.getElementById('virtualKeyboard');
 const focusItems = [
   document.getElementById('usernameField'),
   document.getElementById('gameField'),
+  document.getElementById('musicField'),
   document.getElementById('submitField')
 ];
 
@@ -17,6 +19,7 @@ let focusIndex = 0;
 let vkRow = 0, vkCol = 0;
 let typing = true;
 let gameSelectMode = false;
+let musicSelectMode = false;
 
 const vkKeys = [
   ["A","B","C","D","E","F","G","H","I","J"],
@@ -52,8 +55,11 @@ updateVK();
 
 let username = "";
 let selectedGame = "snake-game";
+let selectedMusic = "classical";
 gameSelectBox.textContent = displayGameName(selectedGame);
+musicSelectBox.textContent = displayMusicName(selectedMusic);
 let gameIndex = 0;
+let musicIndex = 0;
 
 // ========= キー入力 =========
 document.addEventListener("keydown", e => {
@@ -70,6 +76,11 @@ document.addEventListener("keydown", e => {
     if (key === "w") moveGameSelection(-1);
     else if (key === "x") moveGameSelection(1);
     else if (key === "e") selectGameAndNext();
+    else if (key === "q") prevFocus();
+  } else if (musicSelectMode) {
+    if (key === "w") moveMusicSelection(-1);
+    else if (key === "x") moveMusicSelection(1);
+    else if (key === "e") selectMusicAndNext();
     else if (key === "q") prevFocus();
   } else {
     if (key === "e") submitRegistration();
@@ -88,6 +99,15 @@ gameSelectBox.addEventListener("touchstart", (e) => {
   setFocus(1, { openGameSelector: true });
 });
 
+// 音楽欄クリック → 一覧を開く
+musicSelectBox.addEventListener("click", () => {
+  setFocus(2, { openMusicSelector: true });
+});
+musicSelectBox.addEventListener("touchstart", (e) => {
+  e.preventDefault();
+  setFocus(2, { openMusicSelector: true });
+});
+
 // ゲーム一覧の各項目クリック
 Array.from(gameList.children).forEach((item, idx) => {
   item.addEventListener("click", () => {
@@ -100,6 +120,21 @@ Array.from(gameList.children).forEach((item, idx) => {
     gameIndex = idx;
     updateGameList();
     selectGameAndNext();
+  });
+});
+
+// 音楽一覧の各項目クリック
+Array.from(musicList.children).forEach((item, idx) => {
+  item.addEventListener("click", () => {
+    musicIndex = idx;
+    updateMusicList();
+    selectMusicAndNext();
+  });
+  item.addEventListener("touchstart", (e) => {
+    e.preventDefault();
+    musicIndex = idx;
+    updateMusicList();
+    selectMusicAndNext();
   });
 });
 
@@ -117,23 +152,42 @@ function updateFocus() {
   });
 }
 
-function setFocus(index, { openGameSelector = false } = {}) {
+function setFocus(index, { openGameSelector = false, openMusicSelector = false } = {}) {
   focusIndex = index;
   typing = (focusIndex === 0);
   vk.classList.toggle("hidden", !typing);
 
+  console.log(`setFocus: index=${index}, openGameSelector=${openGameSelector}, openMusicSelector=${openMusicSelector}`);
+
   if (focusIndex === 1) {
     gameSelectMode = openGameSelector;
+    musicSelectMode = false;
     if (openGameSelector) {
+      console.log('Opening game selector');
       syncGameIndexWithSelected();
       gameList.classList.remove("hidden");
       updateGameList();
     } else {
       gameList.classList.add("hidden");
     }
+    musicList.classList.add("hidden");
+  } else if (focusIndex === 2) {
+    gameSelectMode = false;
+    musicSelectMode = openMusicSelector;
+    gameList.classList.add("hidden");
+    if (openMusicSelector) {
+      console.log('Opening music selector');
+      syncMusicIndexWithSelected();
+      musicList.classList.remove("hidden");
+      updateMusicList();
+    } else {
+      musicList.classList.add("hidden");
+    }
   } else {
     gameSelectMode = false;
+    musicSelectMode = false;
     gameList.classList.add("hidden");
+    musicList.classList.add("hidden");
   }
 
   updateFocus();
@@ -142,7 +196,9 @@ function setFocus(index, { openGameSelector = false } = {}) {
 
 function prevFocus() {
   if (focusIndex === 0) return;
-  if (focusIndex === 2) {
+  if (focusIndex === 3) {
+    setFocus(2, { openMusicSelector: true });
+  } else if (focusIndex === 2) {
     setFocus(1, { openGameSelector: true });
   } else if (focusIndex === 1) {
     setFocus(0);
@@ -218,7 +274,31 @@ function moveGameSelection(dir) {
 function selectGameAndNext() {
   selectedGame = gameList.children[gameIndex].dataset.value;
   gameSelectBox.textContent = displayGameName(selectedGame);
-  setFocus(2);
+  setFocus(2, { openMusicSelector: true });
+}
+
+// ========= 音楽選択 =========
+function syncMusicIndexWithSelected() {
+  const items = Array.from(musicList.children);
+  const idx = items.findIndex(el => el.dataset.value === selectedMusic);
+  musicIndex = idx >= 0 ? idx : 0;
+}
+
+function updateMusicList() {
+  Array.from(musicList.children).forEach((el, i) => {
+    el.classList.toggle("active", i === musicIndex);
+  });
+}
+
+function moveMusicSelection(dir) {
+  musicIndex = (musicIndex + dir + musicList.children.length) % musicList.children.length;
+  updateMusicList();
+}
+
+function selectMusicAndNext() {
+  selectedMusic = musicList.children[musicIndex].dataset.value;
+  musicSelectBox.textContent = displayMusicName(selectedMusic);
+  setFocus(3);
 }
 
 // ========= 登録 =========
@@ -232,21 +312,26 @@ function submitRegistration() {
   }
   nameError.style.display = "none";
 
-  const player = { name: username.trim(), game: selectedGame, timestamp: new Date().toISOString() };
-
+  const player = { name: username.trim(), game: selectedGame, music: selectedMusic, timestamp: new Date().toISOString() };
+  
   fetch('https://icdcgr8server-production.up.railway.app/', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(player)
   })
-    .then(res => res.json())
+    .then(res => {
+      if (!res.ok) {
+        return res.text().then(t => { throw new Error(t || 'Registration failed'); });
+      }
+      return res.json();
+    })
     .then(data => {
-      resultBox.innerHTML = `<strong>${data.message}</strong>`;
+      resultBox.innerHTML = `<strong>${data.message || '登録が完了しました。'}</strong><br>数秒後にトップページへ戻ります...`;
       resultBox.style.display = 'block';
-      setTimeout(() => history.back(), 1500);
+      setTimeout(() => { window.location.href = '../index.html'; }, 2000);
     })
     .catch(err => {
-      resultBox.innerHTML = `<strong style="color:red;">Error:</strong> ${err.message}`;
+      resultBox.innerHTML = `<strong style="color:red;">登録に失敗しました:</strong> ${err.message}`;
       resultBox.style.display = 'block';
     });
 }
@@ -256,6 +341,11 @@ function validateName(name) {
   const trimmed = name.trim();
   if (!trimmed) return "Please enter at least 1 character.";
   return "";
+}
+
+function displayMusicName(key) {
+  const map = { 'classical': 'Classical', 'jazz': 'Jazz', 'rock': 'Rock', 'electronic': 'Electronic', 'ambient': 'Ambient' };
+  return map[key] || key;
 }
 
 function displayGameName(key) {
@@ -269,7 +359,26 @@ function displayGameName(key) {
   if (raw) {
     const p = JSON.parse(raw);
     if (p.name) { username = p.name; nameInput.value = username; }
-    if (p.game) { selectedGame = p.game; gameSelectBox.textContent = displayGameName(selectedGame); }
+    if (p.game) { 
+      selectedGame = p.game; 
+      gameSelectBox.textContent = displayGameName(selectedGame);
+      // ゲームインデックスを設定
+      const gameItems = Array.from(gameList.children);
+      const gameIdx = gameItems.findIndex(el => el.dataset.value === selectedGame);
+      gameIndex = gameIdx >= 0 ? gameIdx : 0;
+    }
+    if (p.music) { 
+      selectedMusic = p.music; 
+      musicSelectBox.textContent = displayMusicName(selectedMusic);
+      // 音楽インデックスを設定
+      const musicItems = Array.from(musicList.children);
+      const musicIdx = musicItems.findIndex(el => el.dataset.value === selectedMusic);
+      musicIndex = musicIdx >= 0 ? musicIdx : 0;
+    }
   }
+  
+  // 初期状態でゲームリストと音楽リストを非表示
+  gameList.classList.add('hidden');
+  musicList.classList.add('hidden');
 })();
 updateFocus();

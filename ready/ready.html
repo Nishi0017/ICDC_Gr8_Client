@@ -2,23 +2,14 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ゲーム準備</title>
+  <title>ダンスマット準備</title>
   <link rel="stylesheet" href="ready.css">
 </head>
 <body>
-  <h1>ゲーム準備</h1>
+  <h1 id="instruction">この形にパッドを再設置してください</h1>
+  <div id="mat-container"></div>
 
-  <div class="image-container">
-    <img id="gameImage" src="" alt="ゲーム説明" class="instruction-img">
-  </div>
-
-  <div class="light-container" id="lights"></div>
-
-  <div id="countdown" class="countdown"></div>
-
-  <script src="ready.js"></script>
   <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
-  <script src="../mqtt_receiver.js"></script>
+  <script src="ready.js"></script>
 </body>
 </html>
