@@ -230,7 +230,7 @@ Promise.all([
   loadImage(imagePaths.turretImg2)
 ])
 .then(([tankImg1, tankImg2, turretImg1, turretImg2]) => {
-  tank1 = new Tank(100, tankImg1, turretImg1, { angleHold: 'q', forward: 'e', backward: 'w', shoot: 'a' }, false);
+  tank1 = new Tank(100, tankImg1, turretImg1, { angleHold: 'q', forward: 'e', backward: 'w', shoot: 'c' }, false);
   tank2 = new Tank(canvas.width - 150, tankImg2, turretImg2, { angleHold: 's', forward: 'z', backward: 'd', shoot: 'x' }, true);
   update(tank1, tank2);
 })
