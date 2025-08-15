@@ -420,11 +420,29 @@ function stopRotateWheel() {
       selectedMusic = selected;
       showResult('musicResult', `Music: ${selected}`);
 
-      // 必ずプレイヤー選択ルーレットへ（全員参加でも順番決定のため）
+      // ★ ここで ESP32 に曲番号を送信して再生
+      // 曲名 → MicroSD 内の番号にマッピング
+      const musicMap = {
+        'classical': 1,
+        'jazz': 2,
+        'rock': 3,
+        'electronic': 4,
+        'ambient': 5
+      };
+      const songNumber = musicMap[selectedMusic] || 1;
+
+      // MQTT publish
+      if (client && client.connected) {
+        client.publish("dance/playSong", songNumber.toString());
+        console.log(`MQTT: Play song #${songNumber} (${selectedMusic})`);
+      }
+
+      // 次はプレイヤー選択ルーレット
       selectedPlayers = [];
       setTimeout(() => startPlayerSelectionRoulette(), 2000);
       break;
     }
+
 
     case 'playerSelection': {
       // 選ばれたプレイヤーを配列に追加
@@ -465,6 +483,30 @@ startGameBtn.addEventListener('click', () => {
   window.location.href = `../ready/ready.html?${params.toString()}`;
 });
 */
+
+// MQTTからの入力を処理
+document.addEventListener("menu-virtual-key", (e) => {
+  const key = e.detail.key;      // 受信したキー
+  const states = e.detail.states; // 9キー全体の状態
+  // console.log("MQTT key:", key, states);
+
+  Object.entries(playerStatus).forEach(([playerKey, player]) => {
+    if (!player.alive || !player.canMove) return;
+
+    // 左右移動
+    if (key === controls[playerKey].left) player.x -= playerSpeed;
+    if (key === controls[playerKey].right) player.x += playerSpeed;
+
+    // 弾発射（押された瞬間のみ）
+    if (key === controls[playerKey].shoot && !keyPressed[key]) {
+      shootBullet(player, playerKey);
+    }
+  });
+
+  // 押下状態を記録
+  keyPressed[key] = states[keyMap.indexOf(key)] === 1;
+});
+
 
 // 初期化開始
 initialize();

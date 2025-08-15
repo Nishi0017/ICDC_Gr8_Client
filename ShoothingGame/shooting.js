@@ -1,4 +1,13 @@
-const MAX_PLAYERS = 3; // ★ここを1〜3に変更するだけで人数調整可能 
+// URLパラメータ取得
+const urlParams = new URLSearchParams(window.location.search);
+let playerNames = urlParams.get('players')?.split(',') || ['Player1', 'Player2'];
+
+// 最小2人、最大3人
+playerNames = playerNames.slice(0, 3);
+if (playerNames.length < 2) playerNames.push(`Player${playerNames.length + 1}`);
+
+const MAX_PLAYERS = playerNames.length;
+
 
 const gameArea = document.getElementById('gameArea');
 const gameOverText = document.getElementById('gameOver');
@@ -17,23 +26,61 @@ let timeLeft = 60; // 制限時間（秒）
 let scores = {};
 let playerStatus = {};
 
-// プレイヤー生成
-for (let i = 1; i <= MAX_PLAYERS; i++) {
+const playerColors = ['red', 'blue', 'green'];
+
+for (let i = 0; i < MAX_PLAYERS; i++) {
   const player = document.createElement('div');
   player.classList.add('player');
-  player.style.backgroundImage = `url('player${i}.png')`;
-  player.style.left = `${100 + (i - 1) * 80}px`;
+  player.style.backgroundImage = `url('Images/player${i+1}.png')`;
+  player.style.left = `${100 + i * 80}px`;
   gameArea.appendChild(player);
 
-  scores[`p${i}`] = 0;
-  playerStatus[`p${i}`] = {
+  // 名前ラベル
+  const nameLabel = document.createElement('div');
+  nameLabel.classList.add('playerName');
+  nameLabel.textContent = playerNames[i];
+  nameLabel.style.position = 'absolute';
+  nameLabel.style.color = 'white';
+  nameLabel.style.fontSize = '14px';
+  nameLabel.style.textAlign = 'center';
+  gameArea.appendChild(nameLabel);
+
+  scores[`p${i+1}`] = 0;
+  playerStatus[`p${i+1}`] = {
     alive: true,
     element: player,
-    x: 100 + (i - 1) * 80,
+    nameLabel: nameLabel, // 追加
+    x: 100 + i * 80,
     canShoot: true,
     canMove: true
   };
 }
+
+// 画面下部にプレイヤーカラー四角を表示
+const bottomBar = document.createElement('div');
+bottomBar.style.position = 'absolute';
+bottomBar.style.bottom = '0';
+bottomBar.style.left = '0';
+bottomBar.style.width = '100%';
+bottomBar.style.height = '50px';
+bottomBar.style.display = 'flex';
+bottomBar.style.justifyContent = 'space-around';
+bottomBar.style.alignItems = 'center';
+bottomBar.style.backgroundColor = 'black'; // 任意で背景色
+document.body.appendChild(bottomBar);
+
+for (let i = 0; i < MAX_PLAYERS; i++) {
+  const box = document.createElement('div');
+  box.style.width = '50px';
+  box.style.height = '30px';
+  box.style.backgroundColor = playerColors[i];
+  box.style.color = 'white';
+  box.style.textAlign = 'center';
+  box.style.lineHeight = '30px';
+  box.textContent = playerNames[i];
+  bottomBar.appendChild(box);
+}
+
 
 // スコア表示更新
 function updateScoreBoard() {
@@ -43,15 +90,21 @@ function updateScoreBoard() {
 }
 updateScoreBoard();
 
-// キー設定（プレイヤーごとに操作キー割り当て）
+// キー設定
 const controls = {
   p1: { left: 'q', right: 'e', shoot: 'w' },
   p2: { left: 'z', right: 'c', shoot: 'x' },
   p3: { left: 'j', right: 'l', shoot: 'i' }
 };
 
-// プレイヤー操作
+// 押下状態を記録するフラグ（★追加）
+let keyPressed = {};
+
+// プレイヤー操作（★変更）
 document.addEventListener('keydown', (e) => {
+  if (keyPressed[e.key]) return; // 押しっぱなし防止
+  keyPressed[e.key] = true;
+
   Object.entries(playerStatus).forEach(([key, player]) => {
     if (!player.alive || !player.canMove) return;
     if (e.key === controls[key].left) player.x -= playerSpeed;
@@ -59,6 +112,37 @@ document.addEventListener('keydown', (e) => {
     if (e.key === controls[key].shoot && player.canShoot) shootBullet(player, key);
   });
 });
+
+document.addEventListener('keyup', (e) => {
+  keyPressed[e.key] = false; // キーを離したら解除
+});
+
+// ==== 既存の keyPressed を使ってMQTT入力を反映 ====
+
+// MQTT入力イベントを受け取る
+document.addEventListener("menu-virtual-key", (e) => {
+  const key = e.detail.key;     // 押されたキー（例: 'q', 'w', 'e' ...）
+  const states = e.detail.states; // 9キー全体の状態
+  const isDown = states[keyMap.indexOf(key)] === 1; // 1なら押下中
+
+  // 押された瞬間
+  if (isDown && !keyPressed[key]) {
+    keyPressed[key] = true;
+    Object.entries(playerStatus).forEach(([pKey, player]) => {
+      if (!player.alive || !player.canMove) return;
+      if (key === controls[pKey].left) player.x -= playerSpeed;
+      if (key === controls[pKey].right) player.x += playerSpeed;
+      if (key === controls[pKey].shoot && player.canShoot) shootBullet(player, pKey);
+    });
+  }
+
+  // 離された瞬間
+  if (!isDown && keyPressed[key]) {
+    keyPressed[key] = false;
+  }
+});
+
+
 
 // 弾発射
 function shootBullet(player, owner) {
@@ -71,12 +155,15 @@ function shootBullet(player, owner) {
   bullets.push(bullet);
 }
 
-// 敵生成
+// 敵生成（障害物画像）
 function spawnEnemy() {
   const enemy = document.createElement('div');
   enemy.classList.add('enemy');
   enemy.style.left = `${Math.floor(Math.random() * (gameWidth - 30))}px`;
   enemy.style.top = '0px';
+  enemy.style.backgroundImage = "url('Images/inseki1.png')";
+  enemy.style.backgroundSize = "cover";
+  enemy.style.backgroundPosition = "center";
   gameArea.appendChild(enemy);
   enemies.push(enemy);
 }
@@ -86,8 +173,14 @@ function updatePlayers() {
   Object.values(playerStatus).forEach(player => {
     player.x = Math.max(0, Math.min(gameWidth - 30, player.x));
     player.element.style.left = `${player.x}px`;
+
+    // 名前ラベルをロケット下に追従
+    player.nameLabel.style.left = `${player.x}px`;
+    player.nameLabel.style.bottom = '0px'; // ロケットの下
+    player.nameLabel.style.width = '40px';
   });
 }
+
 
 // 弾更新
 function updateBullets() {
