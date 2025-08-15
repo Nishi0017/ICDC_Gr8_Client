@@ -300,9 +300,10 @@ function drawWheel() {
       ctx.font = "bold 16px sans-serif";
 
       const gameName = getGameDisplayName(item);
-      const count = gameCounts[item] || 0;
-      let displayText = `${gameName} (${count} players)`;
-      if (displayText.length > 15) displayText = displayText.substring(0, 13) + '...';
+      //const count = gameCounts[item] || 0;
+      let displayText = gameName;
+      // let displayText = `${gameName} (${count} players)`;
+      // if (displayText.length > 15) displayText = displayText.substring(0, 13) + '...';
 
       ctx.fillText(displayText, 230, 8);
       ctx.restore();

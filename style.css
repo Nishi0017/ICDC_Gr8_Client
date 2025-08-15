@@ -101,6 +101,7 @@ h1 {
   color: #e6eef8;
   border-radius: 10px;
   transition: background-color 0.2s, box-shadow 0.2s;
+  font-size: 40px;
 }
 
 .key-panel.active {
