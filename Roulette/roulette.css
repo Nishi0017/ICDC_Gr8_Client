@@ -214,7 +214,7 @@ canvas {
   border-radius: 12px;
   letter-spacing: .02em;
   text-shadow:
-    0 0 10px rgba(255,255,255,0.9),
+    0 0 10px rgba(0, 0, 0, 0),
     0 0 24px rgba(255,215,0,0.8),
     0 6px 30px rgba(0,0,0,0.45);
   animation: popScale 0.85s cubic-bezier(.2,.9,.2,1);

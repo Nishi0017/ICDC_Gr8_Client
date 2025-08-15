@@ -118,6 +118,20 @@ buttons.forEach((btn, i) => {
   });
 });
 
+// window.inputMapping の初期化
+window.inputMapping = null;
+
+// ボタンクリックで inputMapping をリセット
+document.addEventListener('DOMContentLoaded', () => {
+  const resetBtn = document.getElementById('resetMappingBtn');
+  resetBtn.addEventListener('click', () => {
+    window.inputMapping = null;
+    alert('Input mapping has been reset.');
+    console.log('window.inputMapping =', window.inputMapping);
+  });
+});
+
+
 /* ==========================
    初期処理
    ========================== */

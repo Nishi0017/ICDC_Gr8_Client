@@ -48,7 +48,7 @@ function startGame(playerNames) {
   gameLoop = setInterval(() => {
     update();
     draw();
-  }, 400); // スピードを遅く
+  }, 150); // スピードを遅く
 }
 
 // 既存の handleKey を修正
@@ -131,13 +131,14 @@ function draw() {
     });
 
     // プレイヤーネーム描画（頭の位置の上）
-    ctx.fillStyle = "white"; // 黒だと背景と混ざるので白に
+    const head = player.body[0]; // ← ここで頭を取得
+    ctx.fillStyle = "white"; 
     ctx.font = "14px Arial";
     ctx.textAlign = "center";
     ctx.fillText(player.name, head.x * gridSize + gridSize / 2, head.y * gridSize - 5);
-
   });
 }
+
 
 function showRanking() {
   let rankingData = players.map(p => ({
