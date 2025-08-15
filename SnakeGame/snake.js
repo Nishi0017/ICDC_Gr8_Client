@@ -15,10 +15,10 @@ const directions = {
 };
 
 const playerConfigs = [
-  { color: 'lime', keys: { left: 'a', right: 'd' }, startX: 5, startY: 5, dir: 'right' },
-  { color: 'red', keys: { left: 'j', right: 'l' }, startX: 25, startY: 25, dir: 'left' },
-  { color: 'blue', keys: { left: 'f', right: 'h' }, startX: 5, startY: 25, dir: 'right' },
-  { color: 'yellow', keys: { left: 'ArrowLeft', right: 'ArrowRight' }, startX: 25, startY: 5, dir: 'left' }
+  { color: 'lime', keys: { left: 'q', right: 'w' }, startX: 5, startY: 5, dir: 'right' },
+  { color: 'red', keys: { left: 'e', right: 'a' }, startX: 25, startY: 25, dir: 'left' },
+  { color: 'blue', keys: { left: 's', right: 'd' }, startX: 5, startY: 25, dir: 'right' },
+  { color: 'yellow', keys: { left: 'z', right: 'x' }, startX: 25, startY: 5, dir: 'left' }
 ];
 
 // プレイヤー作成

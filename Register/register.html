@@ -8,11 +8,27 @@
 </head>
 <body>
   <header class="site-header" role="banner">
-    <h1 class="site-title">Interactive Game Collection</h1>
+    <h1 class="site-title" site-title" style="display:flex; align-items:center; gap:64px;">
+      Player Registration
+      <!-- キー可視化パネル -->
+      <div id="keyVisualizer" style="display:grid; grid-template-columns: repeat(3, 40px); grid-gap:6px;">
+        <div class="panel" data-key="q"></div>
+        <div class="panel" data-key="w">↑</div>
+        <div class="panel" data-key="e">E</div>
+        <div class="panel" data-key="a">←</div>
+        <div class="panel" data-key="s"></div>
+        <div class="panel" data-key="d">→</div>
+        <div class="panel" data-key="z"></div>
+        <div class="panel" data-key="x">↓</div>
+        <div class="panel" data-key="c"></div>
+      </div>
+    </h1>
   </header>
 
   <main class="card" role="main" aria-labelledby="title">
-    <h2 id="title">Player Registration</h2>
+
+
+
     <p class="lead">Use Q/W/E/A/S/D/Z/X/C keys to navigate and enter your name.</p>
 
     <div class="field highlight" id="usernameField">
@@ -31,6 +47,8 @@
       <div id="gameList" class="game-list hidden">
         <div data-value="snake-game">Snake Game</div>
         <div data-value="tank-game">Tank Game</div>
+        <div data-value="shooting-game">Shooting Game</div>
+        <div data-value="basketball-game">Basketball Game</div>
       </div>
     </div>
 

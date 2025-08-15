@@ -38,7 +38,7 @@ const GAME_DEFS = [
   { key: 'snake-game',    name: 'Snake Game',    min: 2, max: 4 },
   { key: 'tank-game',     name: 'Tank Game',     min: 2, max: 2 },
   { key: 'shooting-game', name: 'Shooting Game', min: 1, max: 3 },
-  { key: 'basket-game',   name: 'Basket Game',   min: 1, max: 4 }
+  { key: 'basketball-game',   name: 'BasketBall Game',   min: 1, max: 4 }
 ];
 
 // ========== ユーティリティ ==========
@@ -247,10 +247,10 @@ function showFinalResult() {
   const playerLines = selectedPlayers.map((name, idx) => `P${idx + 1}: ${name}`).join(' / ');
 
   finalResultContent.innerHTML = `
-    <div><strong>ゲーム:</strong> ${gameDisplayName}</div>
-    <div><strong>プレイヤー数:</strong> ${selectedPlayerCount}人</div>
-    <div><strong>プレイヤー:</strong> ${playerLines}</div>
-    <div><strong>音楽:</strong> ${selectedMusic}</div>
+    <div><strong>Game:</strong> ${gameDisplayName}</div>
+    <div><strong>Number of Players:</strong> ${selectedPlayerCount}</div>
+    <div><strong>Players:</strong> ${playerLines}</div>
+    <div><strong>Music:</strong> ${selectedMusic}</div>
   `;
 
   finalResult.classList.remove('hidden');
@@ -301,7 +301,7 @@ function drawWheel() {
 
       const gameName = getGameDisplayName(item);
       const count = gameCounts[item] || 0;
-      let displayText = `${gameName} (${count}人)`;
+      let displayText = `${gameName} (${count} players)`;
       if (displayText.length > 15) displayText = displayText.substring(0, 13) + '...';
 
       ctx.fillText(displayText, 230, 8);
@@ -404,7 +404,7 @@ function stopRotateWheel() {
   switch (currentStage) {
     case 'game': {
       selectedGame = selected;
-      showResult('gameResult', `ゲーム: ${getGameDisplayName(selected)}`);
+      showResult('gameResult', `Game: ${getGameDisplayName(selected)}`);
 
       // 最大人数を決定（最少人数は仕様上気にせず、参加可能最大のみ適用）
       const def = GAME_DEFS.find(g => g.key === selectedGame);
@@ -418,7 +418,7 @@ function stopRotateWheel() {
 
     case 'music': {
       selectedMusic = selected;
-      showResult('musicResult', `音楽: ${selected}`);
+      showResult('musicResult', `Music: ${selected}`);
 
       // 必ずプレイヤー選択ルーレットへ（全員参加でも順番決定のため）
       selectedPlayers = [];
@@ -430,12 +430,12 @@ function stopRotateWheel() {
       // 同一人物の重複選択を避けるため currentItems から選ぶ前提
       selectedPlayers.push(selected);
       if (selectedPlayers.length < selectedPlayerCount) {
-        showResult('playerSelectionResult', `プレイヤー${selectedPlayers.length}人目: ${selected}`);
+        showResult('playerSelectionResult', `Player ${selectedPlayers.length}: ${selected}`);
         spinning = false;
         setTimeout(() => startPlayerSelectionRoulette(), 1200);
         return;
       }
-      showResult('playerSelectionResult', `プレイヤー確定: ${selectedPlayers.join(', ')}`);
+      showResult('playerSelectionResult', `Players selected: ${selectedPlayers.join(', ')}`);
       setTimeout(() => showFinalResult(), 2000);
       break;
     }

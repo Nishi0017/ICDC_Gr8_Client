@@ -1,24 +1,44 @@
 <!DOCTYPE html>
-<html lang="ja">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>メニュー</title>
+  <title>FlexStep</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h1>メニュー</h1>
+  <h1>FlexStep</h1>
 
   <div id="playerCountBox">
-    登録済み人数: <span id="playerCount">--</span> 人
+    Registered Players: <span id="playerCount">--</span>
   </div>
 
   <div class="button-container">
-    <button class="menu-btn active" data-link="Register/register.html">登録ページ</button>
-    <button class="menu-btn" data-link="Roulette/roulette.html">ルーレットページ</button>
+    <button class="menu-btn active" data-link="Register/register.html">Registration Page</button>
+    <button class="menu-btn" data-link="Roulette/roulette.html">Roulette Page</button>
   </div>
 
-  <p class="hint">A/Dで選択 &nbsp; Wで決定 &nbsp; Xで人数更新</p>
+  <p id = "alert"></p>
+
+  <!-- 3x3 キー可視化パネル -->
+<div id="key-visualizer">
+  <div class="key-row">
+    <div class="key-panel" data-key="q"></div>
+    <div class="key-panel" data-key="w"></div>
+    <div class="key-panel" data-key="e">Enter</div>
+  </div>
+  <div class="key-row">
+    <div class="key-panel" data-key="a">←</div>
+    <div class="key-panel" data-key="s"></div>
+    <div class="key-panel" data-key="d">→</div>
+  </div>
+  <div class="key-row">
+    <div class="key-panel" data-key="z"></div>
+    <div class="key-panel" data-key="x">Update</div>
+    <div class="key-panel" data-key="c"></div>
+  </div>
+</div>
+
 
   <script src="script.js"></script>
   <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>

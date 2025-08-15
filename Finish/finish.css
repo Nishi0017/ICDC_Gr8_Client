@@ -1,0 +1,45 @@
+body {
+  font-family: sans-serif;
+  text-align: center;
+  background: #f9f9f9;
+}
+
+h1 {
+  margin-top: 20px;
+}
+
+#instruction {
+  margin: 20px;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.grid {
+  display: grid;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.pad {
+  width: 80px;
+  height: 80px;
+  border: 2px solid #333;
+  background: #ddd;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  font-weight: bold;
+  border-radius: 8px;
+  transition: background 0.3s;
+}
+
+.pad.active {
+  background: yellow;
+}
+
+.pad.empty {
+  background: transparent;
+  border: none;
+}

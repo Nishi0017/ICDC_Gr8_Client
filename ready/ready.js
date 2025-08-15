@@ -1,16 +1,44 @@
 // ===== URLパラメータで人数を取得 =====
 const urlParams = new URLSearchParams(window.location.search);
 const players = (urlParams.get('players') || "").split(',').filter(p => p);
-console.log("人数:", players.length, players);
 const numPlayers = parseInt(players.length || "1", 10);
+const game = urlParams.get('game') || "";
+
+// game → 最大プレイヤー数マップ
+const PadNumMap = {
+  "snake-game": 4,
+  "tank-game": 2,
+  "shooting-game": 3,
+  "basketball-game": 4 
+};
+
+// game → 遷移先マップ
+const gameUrlMap = {
+  "snake-game": "../SnakeGame/snake.html",
+  "tank-game": "../TankGame/tank.html",
+  "shooting-game": "../ShootingGame/shooting.html",
+  "basketball-game": "../BasketballGame/basketball.html"
+};
 
 const matContainer = document.getElementById("mat-container");
 const instructionEl = document.getElementById("instruction");
 
-let currentConfigIndex = 0;
 const padOrder = [0,1,2,3,4,5,6,7,8]; // 光らせる順番
 let inputMapping = Array(9).fill(null); // 元idx → 新idx の変換マップ
 
+// ===== 必要パッド数を計算 =====
+//const maxPlayers = PadNumMap[game]; // ゲームの最大人数
+//const padsPerPlayer = Math.floor(padOrder.length / maxPlayers);
+//const requiredPads = padsPerPlayer * numPlayers;
+
+const requiredPads = numPlayers * Math.floor(9 / PadNumMap[game]); // 必要なパッド数
+
+// 実際に設定するパッド順
+const usedPadOrder = padOrder.slice(0, requiredPads);
+
+let currentConfigIndex = 0;
+
+/*
 // MQTT接続
 const host = "wss://b38edc2604c14abc8b3ee5433d86202d.s1.eu.hivemq.cloud:8884/mqtt";
 const options = {
@@ -20,7 +48,6 @@ const options = {
   connectTimeout: 4000,
 };
 const client = mqtt.connect(host, options);
-
 let latestStates = Array(9).fill(0);
 
 client.on("connect", () => {
@@ -35,6 +62,7 @@ client.on("message", (topic, message) => {
     handlePadInput(states);
   }
 });
+*/
 
 // ===== 人数ごとにUI生成 =====
 function createPadGrid(playerNames = []) {
@@ -42,14 +70,15 @@ function createPadGrid(playerNames = []) {
   let layout = [];
   let namePositions = [];
   let padSymbols = {};
+  const PadNum= PadNumMap[game];
 
-  if (numPlayers === 1) {
+  if (PadNum === 1) {
     matContainer.style.gridTemplateColumns = "repeat(3, 80px)";
     layout = Array.from({ length: 9 }, (_, i) => i);
     namePositions = [1];
     layout.forEach(i => padSymbols[i] = (i+1).toString());
   } 
-  else if (numPlayers === 2) {
+  else if (PadNum === 2) {
     matContainer.style.gridTemplateColumns = "repeat(7, 80px)";
     layout = [
       "", 0, "", "", "", 4, "",
@@ -57,35 +86,72 @@ function createPadGrid(playerNames = []) {
       "", 3, "", "", "", 7, ""
     ];
     namePositions = [0, 4];
-    padSymbols = {
-      0: "↔", 4: "↔",
-      1: "←", 5: "←",
-      2: "→", 6: "→",
-      3: "S", 7: "S"
+    padSymbols = { 
+      0: "↔", 4: "↔", 
+      1: "←", 5: "←", 
+      2: "→", 6: "→", 
+      3: "S", 7: "S" 
     };
   } 
-  else if (numPlayers === 3) {
-    matContainer.style.gridTemplateColumns = "repeat(11, 80px)";
-    layout = [
-      "", 0, "", "", "", 3, "", "", "", 6, "",
-      1, "e", 2, "", 4, "e", 5, "", 7, "e", 8
-    ];
-    namePositions = [0, 3, 6];
+  else if (PadNum === 3) {
+    if (numPlayers === 3) {
+      matContainer.style.gridTemplateColumns = "repeat(11, 80px)";
+      layout = [ 
+        "",  0 , "", "", "",  3 , "", "", "",  6 , "",
+         1, "e",  2, "",  4, "e",  5, "",  7, "e",  8
+      ];
+      namePositions = [0, 3, 6];
+    } else if (numPlayers === 2) {
+      matContainer.style.gridTemplateColumns = "repeat(7, 80px)";
+      layout = [
+        "", 0, "", "", "", 3, "",
+        1, "e", 2, "", 4, "e", 5
+      ];
+      namePositions = [0, 3];
+    }
     padSymbols = {
-      0: "S", 3: "S", 6: "S",
-      1: "←", 4: "←", 7: "←",
-      2: "→", 5: "→", 8: "→"
-    };
+      0: "S", 3: "S", 
+      6: "S", 1: "←", 
+      4: "←", 7: "←", 
+      2: "→", 5: "→", 
+      8: "→" };
   } 
-  else if (numPlayers === 4) {
-    matContainer.style.gridTemplateColumns = "repeat(8, 80px)";
-    layout = [
-       0, "e",  1, "",  2, "e",  3, "",
-      "", "", "", "", "", "", "", "",
-       4, "e",  5, "",  6, "e",  7, ""
-    ];
-    namePositions = [0, 2, 4, 6];
+  else if (PadNum === 4) {
     padSymbols = {};
+    if (numPlayers === 4) {
+      matContainer.style.gridTemplateColumns = "repeat(7, 80px)";
+      layout = [
+         0, "e",  1, "",  2, "e",  3,
+        "",  "", "", "", "",  "", "",
+         4, "e",  5, "",  6, "e",  7
+      ];
+      namePositions = [0, 2, 4, 6];
+    } else if (numPlayers === 3) {
+      matContainer.style.gridTemplateColumns = "repeat(11, 80px)";
+      layout = [
+        0, "e", 1, "", 2, "e", 3, "", 4, "e", 5
+      ];
+      namePositions = [0, 2, 4];
+    } else if (numPlayers === 2) {
+      matContainer.style.gridTemplateColumns = "repeat(7, 80px)";
+      layout = [
+        0, "e",1, "", 2, "e", 3
+      ];
+      namePositions = [0, 2];
+    }
+    if (game === "basketball-game") {
+      padSymbols = { 
+        0: "↔", 2: "↔", 4: "↔", 6: "↔",
+        1: "S", 3: "S", 5: "S", 7: "S",
+        8: "" 
+      };
+    } else if (game === "snake-game") {
+      padSymbols = {
+        0: "←", 2: "←", 4: "←", 6: "←",
+        1: "→", 3: "→", 5: "→", 7: "→",
+        8: ""
+      };
+    }
   }
 
   let nameIndexMap = {};
@@ -114,12 +180,10 @@ function createPadGrid(playerNames = []) {
     pad.classList.add("pad");
     if (v === "" || v === " ") {
       pad.classList.add("empty");
-    } 
-    else if (typeof v === "string" && v === "e") {
+    } else if (typeof v === "string" && v === "e") {
       pad.classList.add("extra");
       pad.textContent = "E";
-    } 
-    else {
+    } else {
       pad.dataset.index = v;
       pad.textContent = padSymbols[v] || "";
     }
@@ -138,26 +202,34 @@ function highlightPad(idx) {
     }
   });
 }
-/*
-function markConfigured(idx) {
-  const pad = document.querySelector(`.pad[data-index='${idx}']`);
-  if (pad) {
-    pad.classList.remove("active");
-    pad.classList.add("configured");
+
+// ===== 完了処理 =====
+function finishConfig() {
+  // 未割り当てパッドを自動で埋める
+  for (let i = 0; i < inputMapping.length; i++) {
+    if (inputMapping[i] === null) {
+      inputMapping[i] = currentConfigIndex++;
+    }
+  }
+  document.querySelectorAll(".pad").forEach(p => p.classList.remove("active"));
+  instructionEl.textContent = "すべての設定が完了しました！";
+  console.log("変換マッピング:", inputMapping);
+  localStorage.setItem("inputMapping", JSON.stringify(inputMapping));
+
+  const nextPage = gameUrlMap[game];
+  if (nextPage) {
+    const playersParam = encodeURIComponent(players.join(","));
+    window.location.href = `${nextPage}?players=${playersParam}`;
   }
 }
-*/
 
 // ===== 設定ステップ =====
 function startConfigStep() {
-  if (currentConfigIndex >= padOrder.length) {
-    instructionEl.textContent = "すべての設定が完了しました！";
-    console.log("変換マッピング:", inputMapping);
-    localStorage.setItem("inputMapping", JSON.stringify(inputMapping));
+  if (currentConfigIndex >= usedPadOrder.length) {
+    finishConfig();
     return;
   }
-
-  const targetPad = padOrder[currentConfigIndex];
+  const targetPad = usedPadOrder[currentConfigIndex];
   highlightPad(targetPad);
   instructionEl.textContent = `光っているパネル(${targetPad + 1})を踏んでください`;
 }
@@ -165,35 +237,19 @@ function startConfigStep() {
 // ===== 入力処理 =====
 function handlePadInput(states) {
   const activePads = states.map((v, i) => v === 1 ? i : null).filter(v => v !== null);
-  if (activePads.length !== 1) return; // 1つだけ踏まれた場合のみ処理
-
+  if (activePads.length !== 1) return;
   const pressedPad = activePads[0];
+  if (inputMapping[pressedPad] !== null) return;
 
-  // すでに登録済みなら無視
-  if (inputMapping[pressedPad] !== null) {
-    console.log(`⚠️ パッド ${pressedPad + 1} はすでに登録されています`);
-    return;
-  }
-
-  // マッピング登録
   inputMapping[pressedPad] = currentConfigIndex;
   console.log(`✅ パッド ${pressedPad + 1} を ${currentConfigIndex} に割り当て`);
-  //markConfigured(pressedPad);
-
   currentConfigIndex++;
-  startConfigStep();
-}
 
-// ===== 入力マッピング適用 =====
-function remapInput(states) {
-  let remapped = Array(9).fill(0);
-  states.forEach((v, i) => {
-    if (v === 1) {
-      const newIdx = inputMapping[i];
-      if (newIdx !== null) remapped[newIdx] = 1;
-    }
-  });
-  return remapped;
+  if (currentConfigIndex >= usedPadOrder.length) {
+    finishConfig();
+    return;
+  }
+  startConfigStep();
 }
 
 // ===== 初期描画 =====

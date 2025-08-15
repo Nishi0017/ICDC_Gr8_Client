@@ -109,3 +109,29 @@ button[disabled]{ opacity:0.6; cursor:not-allowed; }
 .vk span.active { background-color: rgba(124,58,237,0.6); color:white; }
 
 @media (max-width:520px){ .card{ padding:18px; } }
+
+#keyVisualizer {
+  display: grid;
+  grid-template-columns: repeat(3, 40px);
+  grid-gap: 6px;
+}
+
+.panel {
+  width: 40px;
+  height: 40px;
+  border: 2px solid var(--muted);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+  border-radius: 6px;
+  background-color: var(--card);
+  color: #e6eef8;
+  transition: background-color 0.2s, color 0.2s, transform 0.1s;
+}
+
+.panel.active {
+  background-color: var(--accent);
+  color: #ffffff;
+  transform: scale(1.1);
+}

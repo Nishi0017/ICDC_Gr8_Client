@@ -46,18 +46,18 @@ client.on("message", (topic, message) => {
   }
 
   states.forEach((val, idx) => {
-  const key = keyMap[idx];
-  if (val === 1 && prevStates[idx] === 0) {
-    // 踏み始め
-    const kd = new KeyboardEvent("keydown", { key, bubbles: true, cancelable: true, composed: true });
-    window.dispatchEvent(kd);
-    prevStates[idx] = 1;
-  } else if (val === 0 && prevStates[idx] === 1) {
-    // 踏み離し
-    const ku = new KeyboardEvent("keyup", { key, bubbles: true, cancelable: true, composed: true });
-    window.dispatchEvent(ku);
-    prevStates[idx] = 0;
-  }
-});
+    const key = keyMap[idx];
+    if (val === 1 && prevStates[idx] === 0) {
+      // 踏み始め
+      const kd = new KeyboardEvent("keydown", { key, bubbles: true, cancelable: true, composed: true });
+      window.dispatchEvent(kd);
+      prevStates[idx] = 1;
+    } else if (val === 0 && prevStates[idx] === 1) {
+      // 踏み離し
+      const ku = new KeyboardEvent("keyup", { key, bubbles: true, cancelable: true, composed: true });
+      window.dispatchEvent(ku);
+      prevStates[idx] = 0;
+    }
+  });
 
 });

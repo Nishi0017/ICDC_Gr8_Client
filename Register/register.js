@@ -261,8 +261,12 @@ function syncGameIndexWithSelected() {
 }
 
 function updateGameList() {
-  Array.from(gameList.children).forEach((el, i) => {
+  const items = Array.from(gameList.children);
+  items.forEach((el, i) => {
     el.classList.toggle("active", i === gameIndex);
+    if (i === gameIndex) {
+      el.scrollIntoView({ block: "nearest", behavior: "smooth" });
+    }
   });
 }
 
@@ -285,8 +289,12 @@ function syncMusicIndexWithSelected() {
 }
 
 function updateMusicList() {
-  Array.from(musicList.children).forEach((el, i) => {
+  const items = Array.from(musicList.children);
+  items.forEach((el, i) => {
     el.classList.toggle("active", i === musicIndex);
+    if (i === musicIndex) {
+      el.scrollIntoView({ block: "nearest", behavior: "smooth" });
+    }
   });
 }
 
@@ -326,12 +334,12 @@ function submitRegistration() {
       return res.json();
     })
     .then(data => {
-      resultBox.innerHTML = `<strong>${data.message || '登録が完了しました。'}</strong><br>数秒後にトップページへ戻ります...`;
+      resultBox.innerHTML = `<strong>${data.message || 'Registration completed.'}</strong><br>You will be redirected to the top page in a few seconds...`;
       resultBox.style.display = 'block';
       setTimeout(() => { window.location.href = '../index.html'; }, 2000);
     })
     .catch(err => {
-      resultBox.innerHTML = `<strong style="color:red;">登録に失敗しました:</strong> ${err.message}`;
+      resultBox.innerHTML = `<strong style="color:red;">Registration failed:</strong> ${err.message}`;
       resultBox.style.display = 'block';
     });
 }
@@ -349,7 +357,7 @@ function displayMusicName(key) {
 }
 
 function displayGameName(key) {
-  const map = { 'snake-game': 'Snake Game', 'tank-game': 'Tank Game' };
+  const map = { 'snake-game': 'Snake Game', 'tank-game': 'Tank Game', 'shooting-game': 'Shooting Game', 'basketball-game': 'Basketball Game'};
   return map[key] || key;
 }
 
@@ -376,6 +384,25 @@ function displayGameName(key) {
       musicIndex = musicIdx >= 0 ? musicIdx : 0;
     }
   }
+
+  // 3x3 パネルを取得
+  const panels = document.querySelectorAll("#keyVisualizer .panel");
+
+  document.addEventListener("keydown", e => {
+    const key = e.key.toLowerCase();
+
+    // 対応キーのみ反応
+    if ("qweasdzxc".includes(key)) {
+      const panel = document.querySelector(`#keyVisualizer .panel[data-key="${key}"]`);
+      if (panel) {
+        panel.classList.add("active");
+        setTimeout(() => panel.classList.remove("active"), 150); // 光ってすぐ戻る
+      }
+    }
+
+    // 既存の入力処理はそのまま
+  });
+
   
   // 初期状態でゲームリストと音楽リストを非表示
   gameList.classList.add('hidden');
