@@ -427,14 +427,24 @@ function stopRotateWheel() {
     }
 
     case 'playerSelection': {
-      // 同一人物の重複選択を避けるため currentItems から選ぶ前提
+      // 選ばれたプレイヤーを配列に追加
       selectedPlayers.push(selected);
+
+      // ★ ここでサーバーから削除
+      fetch(`https://icdcgr8server-production.up.railway.app/players/${encodeURIComponent(selected)}`, {
+        method: 'DELETE'
+      })
+      .then(res => res.json())
+      .then(data => console.log(`削除成功:`, data))
+      .catch(err => console.error('削除失敗:', err));
+
       if (selectedPlayers.length < selectedPlayerCount) {
         showResult('playerSelectionResult', `Player ${selectedPlayers.length}: ${selected}`);
         spinning = false;
         setTimeout(() => startPlayerSelectionRoulette(), 1200);
         return;
       }
+
       showResult('playerSelectionResult', `Players selected: ${selectedPlayers.join(', ')}`);
       setTimeout(() => showFinalResult(), 2000);
       break;

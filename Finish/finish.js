@@ -2,6 +2,7 @@
 const padOrder = [0,1,2,3,4,5,6,7,8]; // 光らせる順番（全9枚）
 let inputMapping = Array(9).fill(null); // 元idx → 新idx の変換マップ
 let currentConfigIndex = 0;
+let waitingForRelease = false; // 踏みっぱなし防止
 
 // ===== UI作成（3×3固定） =====
 const matContainer = document.getElementById("mat-container");
@@ -24,7 +25,6 @@ function createPadGrid3x3() {
     const pad = document.createElement("div");
     pad.classList.add("pad");
     pad.dataset.index = i;
-    //pad.textContent = i + 1;
 
     cell.appendChild(pad);
     matContainer.appendChild(cell);
@@ -41,7 +41,7 @@ function highlightPad(idx) {
   });
 }
 
-// ===== 完了処理 =====
+// ===== 設定完了処理 =====
 function finishConfig() {
   // 未割り当てを埋める
   for (let i = 0; i < inputMapping.length; i++) {
@@ -54,9 +54,9 @@ function finishConfig() {
   console.log("変換マッピング:", inputMapping);
   localStorage.setItem("inputMapping", JSON.stringify(inputMapping));
 
-  // 終了後にメニュー画面へ戻る（必要に応じて変更）
+  // 終了後にメニュー画面へ戻る
   setTimeout(() => {
-    window.location.href = "../Menu/menu.html";
+    window.location.href = "../index.html";
   }, 1000);
 }
 
@@ -73,14 +73,22 @@ function startConfigStep() {
 
 // ===== 入力処理 =====
 function handlePadInput(states) {
-  const activePads = states.map((v, i) => v === 1 ? i : null).filter(v => v !== null);
-  if (activePads.length !== 1) return;
+  const activePads = states.map((v,i) => v === 1 ? i : null).filter(v => v !== null);
+  if (activePads.length !== 1 || waitingForRelease) return;
+
   const pressedPad = activePads[0];
   if (inputMapping[pressedPad] !== null) return;
 
+  // 割り当て
   inputMapping[pressedPad] = currentConfigIndex;
   console.log(`✅ パッド ${pressedPad + 1} を ${currentConfigIndex} に割り当て`);
+  
+  // 視覚フィードバック
+  const padEl = document.querySelector(`.pad[data-index="${pressedPad}"]`);
+  if(padEl) padEl.classList.add("configured");
+
   currentConfigIndex++;
+  waitingForRelease = true; // 離すまで次の入力を無効化
 
   if (currentConfigIndex >= padOrder.length) {
     finishConfig();
@@ -105,10 +113,17 @@ client.on("connect", () => {
   client.subscribe("dance/mat");
 });
 
+// 入力解除監視（踏みっぱなし防止用）
 client.on("message", (topic, message) => {
   if (topic === "dance/mat") {
-    const states = message.toString().trim().split(",").map(v => parseInt(v, 10));
+    const states = message.toString().trim().split(",").map(v => parseInt(v,10));
     latestStates = states;
+
+    // 離したら次の入力を受け付け
+    if(waitingForRelease && states.every(s => s===0)) {
+      waitingForRelease = false;
+    }
+
     handlePadInput(states);
   }
 });
