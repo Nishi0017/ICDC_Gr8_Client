@@ -210,8 +210,8 @@ function finishConfig() {
     }
   }
   document.querySelectorAll(".pad").forEach(p => p.classList.remove("active"));
-  instructionEl.textContent = "すべての設定が完了しました！";
-  console.log("変換マッピング:", inputMapping);
+  instructionEl.textContent = "All settings are complete!";
+  console.log("Mapping:", inputMapping);
   localStorage.setItem("inputMapping", JSON.stringify(inputMapping));
 
   const nextPage = gameUrlMap[game];
@@ -229,7 +229,7 @@ function startConfigStep() {
   }
   const targetPad = usedPadOrder[currentConfigIndex];
   highlightPad(targetPad);
-  instructionEl.textContent = `光っているパネル(${targetPad + 1})を踏んでください`;
+  instructionEl.textContent = `Step on the highlighted panel (${targetPad + 1})`;
 }
 
 // ===== 入力処理 =====
@@ -240,7 +240,7 @@ function handlePadInput(states) {
   if (inputMapping[pressedPad] !== null) return;
 
   inputMapping[pressedPad] = currentConfigIndex;
-  console.log(`✅ パッド ${pressedPad + 1} を ${currentConfigIndex} に割り当て`);
+  console.log(`✅ Pad ${pressedPad + 1} assigned to ${currentConfigIndex}`);
   currentConfigIndex++;
 
   if (currentConfigIndex >= usedPadOrder.length) {

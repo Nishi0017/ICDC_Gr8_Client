@@ -50,8 +50,8 @@ function finishConfig() {
     }
   }
   document.querySelectorAll(".pad").forEach(p => p.classList.remove("active"));
-  instructionEl.textContent = "3×3の初期配置に戻しました！";
-  console.log("変換マッピング:", inputMapping);
+  instructionEl.textContent = "Reset to the initial 3×3 layout!";
+  console.log("Mapping:", inputMapping);
   localStorage.setItem("inputMapping", JSON.stringify(inputMapping));
 
   // 終了後にメニュー画面へ戻る
@@ -68,7 +68,7 @@ function startConfigStep() {
   }
   const targetPad = padOrder[currentConfigIndex];
   highlightPad(targetPad);
-  instructionEl.textContent = `光っているパネル(${targetPad + 1})を踏んでください`;
+  instructionEl.textContent = `Step on the highlighted panel (${targetPad + 1})`;
 }
 
 // ===== 入力処理 =====
@@ -81,7 +81,7 @@ function handlePadInput(states) {
 
   // 割り当て
   inputMapping[pressedPad] = currentConfigIndex;
-  console.log(`✅ パッド ${pressedPad + 1} を ${currentConfigIndex} に割り当て`);
+  console.log(`✅ Pad ${pressedPad + 1} assigned to ${currentConfigIndex}`);
   
   // 視覚フィードバック
   const padEl = document.querySelector(`.pad[data-index="${pressedPad}"]`);
