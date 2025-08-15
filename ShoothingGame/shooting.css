@@ -1,0 +1,64 @@
+body {
+  background: #000;
+  color: #fff;
+  font-family: sans-serif;
+  text-align: center;
+}
+
+#infoBar {
+  position: relative;
+  width: 400px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+#gameArea {
+  position: relative;
+  margin: 10px auto;
+  background: #111;
+  width: 400px;
+  height: 600px;
+  overflow: hidden;
+  border: 2px solid #fff;
+}
+
+.player {
+  width: 30px;
+  height: 30px;
+  position: absolute;
+  bottom: 20px;
+  background-size: cover;
+  background-position: center;
+}
+
+.bullet {
+  width: 5px;
+  height: 10px;
+  background: yellow;
+  position: absolute;
+}
+
+.enemy {
+  width: 30px;
+  height: 30px;
+  background: green;
+  position: absolute;
+  top: 0;
+}
+
+#gameOver {
+  font-size: 28px;
+  margin-top: 20px;
+  color: red;
+}
+
+#timer {
+  color: white;
+}
+
+#scoreBoard {
+  color: yellow;
+}

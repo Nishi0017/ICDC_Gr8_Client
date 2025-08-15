@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>縦スクロールシューティング</title>
+  <link rel="stylesheet" href="shooting.css">
+</head>
+<body>
+  <h1>Shooting Game</h1>
+  
+  <!-- タイマーとスコア表示 -->
+  <div id="infoBar">
+    <div id="timer">60</div>
+    <div id="scoreBoard"></div>
+  </div>
+
+  <div id="gameArea"></div>
+
+  <div id="gameOver" hidden>ゲームオーバー</div>
+
+  <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+  <script src="../mqtt_receiver.js"></script>
+  <script src="shooting.js"></script>
+</body>
+</html>

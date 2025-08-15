@@ -1,36 +1,48 @@
 body {
+  font-family: sans-serif;
   text-align: center;
   background-color: #111;
-  color: white;
-  font-family: sans-serif;
+  color: #fff;
 }
 
 canvas {
   border: 2px solid white;
-  background-color: #000;
-}
-
-#result {
-  position: relative;
-  margin-top: 20px;
-  font-size: 24px;
-  white-space: pre-line;
+  margin-top: 10px;
+  background-color: black;
 }
 
 .rank-item {
-  font-weight: bold;
-  font-size: 48px;
   opacity: 0;
-  transform: scale(0.5);
-  transition: all 0.6s ease-out;
+  transition: opacity 0.5s ease-in;
 }
 
 .rank-item.show {
   opacity: 1;
-  transform: scale(1);
 }
 
-.rank-1 { color: gold; text-shadow: 0 0 10px gold; }
-.rank-2 { color: silver; text-shadow: 0 0 10px silver; }
-.rank-3 { color: #cd7f32; text-shadow: 0 0 10px #cd7f32; }
-.rank-4 { color: white; text-shadow: 0 0 10px white; }
+.rank-1 { color: gold; font-size: 2em; }
+.rank-2 { color: silver; font-size: 1.8em; }
+.rank-3 { color: #cd7f32; font-size: 1.6em; }
+.rank-4 { color: white; font-size: 1.4em; }
+
+#legend {
+  margin-top: 10px;
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+}
+
+.legend-color {
+  width: 18px;
+  height: 18px;
+  border: 1px solid #fff;
+  display: inline-block;
+  border-radius: 4px;
+}

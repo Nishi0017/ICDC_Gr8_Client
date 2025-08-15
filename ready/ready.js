@@ -38,7 +38,6 @@ const usedPadOrder = padOrder.slice(0, requiredPads);
 
 let currentConfigIndex = 0;
 
-/*
 // MQTT接続
 const host = "wss://b38edc2604c14abc8b3ee5433d86202d.s1.eu.hivemq.cloud:8884/mqtt";
 const options = {
@@ -62,7 +61,6 @@ client.on("message", (topic, message) => {
     handlePadInput(states);
   }
 });
-*/
 
 // ===== 人数ごとにUI生成 =====
 function createPadGrid(playerNames = []) {
