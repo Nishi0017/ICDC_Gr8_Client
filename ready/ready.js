@@ -218,9 +218,39 @@ function highlightPad(idx) {
   });
 }
 
-// ===== 完了処理 =====
+const skipBtn = document.getElementById("skip-btn");
+
+skipBtn.addEventListener("click", skipCurrentStep);
+
+// ===== スキップ関数 =====
+function skipCurrentStep() {
+  const targetPad = usedPadOrder[currentConfigIndex];
+  if (targetPad !== undefined && inputMapping[targetPad] === null) {
+    inputMapping[targetPad] = currentConfigIndex;
+    console.log(`⏭ Pad ${targetPad + 1} skipped, assigned to ${currentConfigIndex}`);
+    currentConfigIndex++;
+    if (currentConfigIndex >= usedPadOrder.length) {
+      finishConfig();
+      return;
+    }
+    startConfigStep();
+  }
+}
+
+// ===== startConfigStep修正: スキップボタン有効化 =====
+function startConfigStep() {
+  if (currentConfigIndex >= usedPadOrder.length) {
+    finishConfig();
+    return;
+  }
+  const targetPad = usedPadOrder[currentConfigIndex];
+  highlightPad(targetPad);
+  instructionEl.textContent = `Step on the highlighted panel (${targetPad + 1})`;
+  skipBtn.disabled = false; // 常に押せる状態にする
+}
+
+// ===== finishConfig修正: 残りパッド自動割り当て =====
 function finishConfig() {
-  // 未割り当てパッドを自動で埋める
   for (let i = 0; i < inputMapping.length; i++) {
     if (inputMapping[i] === null) {
       inputMapping[i] = currentConfigIndex++;

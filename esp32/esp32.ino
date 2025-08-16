@@ -161,7 +161,7 @@ void setup(){
 
   Serial2.begin(115200, SERIAL_8N1, MP3_UART_RX, MP3_UART_TX);
   mp3Player.init(Serial2);
-  mp3Player.volume(5);
+  mp3Player.volume(15);
 
   connectWiFi();
 
