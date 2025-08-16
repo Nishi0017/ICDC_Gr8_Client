@@ -48,7 +48,7 @@ function startGame(playerNames) {
   gameLoop = setInterval(() => {
     update();
     draw();
-  }, 150); // スピードを遅く
+  }, 350); // スピードを遅く
 }
 
 // 既存の handleKey を修正
