@@ -52,6 +52,19 @@ let latestStates = Array(9).fill(0);
 client.on("connect", () => {
   console.log("✅ Connected to HiveMQ Cloud");
   client.subscribe("dance/mat");
+
+  // ===== 音楽再生機能 =====
+  const musicMap = {
+    'APT': 1,
+    'SPICY': 2,
+  };
+
+  const musicName = urlParams.get('music');
+  if (musicName && musicMap[musicName.toUpperCase()]) {
+    const songNumber = musicMap[musicName.toUpperCase()];
+    client.publish("dance/playSong", songNumber.toString());
+    console.log(`🎵 Sent playSong: ${musicName} (#${songNumber})`);
+  }
 });
 
 client.on("message", (topic, message) => {

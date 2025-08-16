@@ -55,7 +55,7 @@ updateVK();
 
 let username = "";
 let selectedGame = "snake-game";
-let selectedMusic = "classical";
+let selectedMusic = "APT";
 gameSelectBox.textContent = displayGameName(selectedGame);
 musicSelectBox.textContent = displayMusicName(selectedMusic);
 let gameIndex = 0;
@@ -352,7 +352,7 @@ function validateName(name) {
 }
 
 function displayMusicName(key) {
-  const map = { 'classical': 'Classical', 'jazz': 'Jazz', 'rock': 'Rock', 'electronic': 'Electronic', 'ambient': 'Ambient' };
+  const map = { 'APT': 'APT', 'SPICY': 'SPICY'};
   return map[key] || key;
 }
 
@@ -402,6 +402,47 @@ function displayGameName(key) {
 
     // 既存の入力処理はそのまま
   });
+
+  // ========= MQTT経由のキー入力 =========
+document.addEventListener("menu-virtual-key", e => {
+  const key = e.detail.key.toLowerCase();
+
+  // MQTT入力でもキー可視化パネルを光らせる
+  const panel = document.querySelector(`#keyVisualizer .panel[data-key="${key}"]`);
+  if (panel) {
+    panel.classList.add("active");
+    setTimeout(() => panel.classList.remove("active"), 150);
+  }
+
+  // 既存のキー入力処理をそのまま流用
+  handleKeyInput(key);
+});
+
+// 既存のkeydown処理を関数化してMQTTと共有
+function handleKeyInput(key) {
+  if (typing) {
+    if (key === "q") prevFocus();
+    else if (key === "a") moveVK(-1);
+    else if (key === "d") moveVK(1);
+    else if (key === "w") moveVKRow(-1);
+    else if (key === "x") moveVKRow(1);
+    else if (key === "e") handleVKEnter();
+  } else if (gameSelectMode) {
+    if (key === "w") moveGameSelection(-1);
+    else if (key === "x") moveGameSelection(1);
+    else if (key === "e") selectGameAndNext();
+    else if (key === "q") prevFocus();
+  } else if (musicSelectMode) {
+    if (key === "w") moveMusicSelection(-1);
+    else if (key === "x") moveMusicSelection(1);
+    else if (key === "e") selectMusicAndNext();
+    else if (key === "q") prevFocus();
+  } else {
+    if (key === "e") submitRegistration();
+    else if (key === "q") prevFocus();
+  }
+}
+
 
   
   // 初期状態でゲームリストと音楽リストを非表示

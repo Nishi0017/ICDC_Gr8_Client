@@ -24,11 +24,13 @@ const options = {
 const keyMap = ["q", "w", "e", "a", "s", "d", "z", "x", "c"];
 
 // 保存されたキー配置マッピング（例: [2,0,1,3,4,5,6,7,8]）
-window.inputMapping = window.inputMapping || null;
 try {
   const stored = localStorage.getItem("inputMapping");
   if (stored) window.inputMapping = JSON.parse(stored);
 } catch(e){ console.warn(e); }
+
+// デフォルトマッピング確保
+if (!window.inputMapping) window.inputMapping = [0,1,2,3,4,5,6,7,8];
 
 /* ==========================
    MQTTクライアント作成
@@ -80,59 +82,37 @@ client.on("error", (err) => console.error("❌ MQTT Error:", err?.message || err
 client.on("message", (topic, message) => {
   if (topic !== "dance/mat") return;
 
-  const text = message.toString().trim();
-  // console.log("📩 Received:", text);
-
-  // 軽いフォーマットチェック
-  if (!/^[0-1](,[0-1]){8}$/.test(text)) return;
-
-  let states = text.split(",").map(v => v === "1" ? 1 : 0);
+  let states = message.toString().trim().split(",").map(v => v === "1" ? 1 : 0);
 
   // キーマッピング適用
-  if (inputMapping && Array.isArray(inputMapping) && inputMapping.length === 9) {
+  if (window.inputMapping && Array.isArray(window.inputMapping) && window.inputMapping.length === 9) {
     const remapped = Array(9).fill(0);
     for (let originalIdx = 0; originalIdx < 9; originalIdx++) {
       if (states[originalIdx] === 1) {
-        const mappedIdx = inputMapping[originalIdx];
+        const mappedIdx = window.inputMapping[originalIdx];
         if (mappedIdx != null && mappedIdx >= 0 && mappedIdx < 9) {
           remapped[mappedIdx] = 1;
         }
       }
     }
     states = remapped;
+    console.log("🔄 Remapped states:", states);
   }
 
-  // 差分検出 → 押下/離上処理
   for (let idx = 0; idx < 9; idx++) {
     const val = states[idx];
     const prev = prevStates[idx];
     const key = keyMap[idx];
 
-    // 押した瞬間
     if (val === 1 && prev === 0) {
-      // Tankゲーム用（keys[] がある時のみ）
-      if (hasTankKeys) {
-        keys[key] = true;
-      }
-
-      // ★ index や他のページ向け：共通カスタムイベントで通知
-      //    受け手は document.addEventListener("menu-virtual-key", ...)
+      if (hasTankKeys) keys[key] = true;
       document.dispatchEvent(new CustomEvent("menu-virtual-key", {
         detail: { key, states: [...states], source: "mqtt" }
       }));
-
-      // 可能なら可視化も直接（存在しなくてもOK）
-      if (typeof flashKeyPanel === "function") {
-        flashKeyPanel(key);
-      }
-
+      if (typeof flashKeyPanel === "function") flashKeyPanel(key);
       prevStates[idx] = 1;
-    }
-    // 離した瞬間
-    else if (val === 0 && prev === 1) {
-      if (hasTankKeys) {
-        keys[key] = false;
-      }
+    } else if (val === 0 && prev === 1) {
+      if (hasTankKeys) keys[key] = false;
       prevStates[idx] = 0;
     }
   }

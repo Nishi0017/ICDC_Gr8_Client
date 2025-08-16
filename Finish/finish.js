@@ -10,7 +10,7 @@ const instructionEl = document.getElementById("instruction");
 
 function createPadGrid3x3() {
   matContainer.innerHTML = "";
-  matContainer.style.gridTemplateColumns = "repeat(3, 80px)";
+  matContainer.style.gridTemplateColumns = "repeat(3, 85px)";
   
   for (let i = 0; i < 9; i++) {
     const cell = document.createElement("div");
@@ -19,7 +19,7 @@ function createPadGrid3x3() {
     cell.style.alignItems = "center";
 
     const spacer = document.createElement("div");
-    spacer.style.height = "20px";
+    spacer.style.height = "6px";
     cell.appendChild(spacer);
 
     const pad = document.createElement("div");

@@ -1,22 +1,46 @@
+:root {
+  --bg: #0f172a;
+  --card: #0b1220;
+  --accent: #7c3aed;
+  --muted: #94a3b8;
+  --glass: rgba(255,255,255,0.04);
+}
+
+* { box-sizing: border-box; }
+
 body {
-  font-family: sans-serif;
-  text-align: center;
-  background: #f9f9f9;
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  background:
+    radial-gradient(1200px 600px at 10% 10%, rgba(124,58,237,0.12), transparent 10%),
+    radial-gradient(900px 450px at 90% 90%, rgba(16,185,129,0.06), transparent 10%),
+    var(--bg);
+  color: #e6eef8;
+  padding: 24px;
 }
 
 h1 {
-  margin-top: 20px;
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: var(--accent);
+  text-shadow: 0 0 8px rgba(124, 58, 237, 0.8);
+  margin: 20px 0;
+  user-select: none;
 }
 
 #instruction {
   margin: 20px;
-  font-size: 20px;
-  font-weight: bold;
+  font-size: 1.2rem;
+  color: var(--muted);
 }
 
 .grid {
   display: grid;
-  gap: 10px;
+  gap: 12px;
   justify-content: center;
   margin-top: 20px;
 }
@@ -24,22 +48,27 @@ h1 {
 .pad {
   width: 80px;
   height: 80px;
-  border: 2px solid #333;
-  background: #ddd;
+  border: 2px solid rgba(255,255,255,0.1);
+  background: var(--glass);
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 22px;
   font-weight: bold;
-  border-radius: 8px;
-  transition: background 0.3s;
+  border-radius: 10px;
+  transition: background-color 0.3s, box-shadow 0.3s;
+  color: #e6eef8;
+  box-shadow: 0 6px 18px rgba(2,6,23,0.6);
+  backdrop-filter: blur(4px);
 }
 
 .pad.active {
-  background: yellow;
+  background-color: rgba(124,58,237,0.6);
+  box-shadow: 0 0 12px rgba(124,58,237,0.8);
 }
 
 .pad.empty {
   background: transparent;
   border: none;
+  box-shadow: none;
 }

@@ -256,6 +256,7 @@ function freezePlayer(playerKey, duration) {
 }
 
 // ゲーム終了
+// ゲーム終了
 function endGame() {
   clearInterval(gameLoop);
   clearInterval(spawnLoop);
@@ -266,28 +267,43 @@ function endGame() {
   const winners = Object.keys(scores).filter(k => scores[k] === maxScore);
 
   if (winners.length === 1) {
-    winner = `🎉 Player ${winners[0].slice(1)} 勝利！ 🎉`;
+    winner = `🎉 ${playerNames[parseInt(winners[0].slice(1)) - 1]} 勝利！ 🎉`;
   } else {
-    winner = `🤝 引き分け！ 🤝`;
+    winner = `DRAW！`;
   }
 
-  gameOverText.textContent = `${winner}\n(${Object.entries(scores).map(([k, v], idx) => `P${idx + 1}: ${v}`).join(' / ')})`;
+  const scoreSummary = Object.entries(scores)
+    .map(([k, v], idx) => `${playerNames[idx]}: ${v}`)
+    .join(' / ');
+
+  gameOverText.textContent = `${winner}\n(${scoreSummary})`;
   gameOverText.hidden = false;
+
+  // ★ 3秒後に finish.html へ遷移（勝者名をURLに渡す）
+  setTimeout(() => {
+    const encodedWinner = encodeURIComponent(winner);
+    const encodedScores = encodeURIComponent(scoreSummary);
+    window.location.href = `../finish/finish.html?winner=${encodedWinner}&scores=${encodedScores}`;
+  }, 3000);
 }
 
-// メインループ
+// ===== ゲーム開始処理 =====
+
+// 敵生成ループ（1秒ごと）
+const spawnLoop = setInterval(spawnEnemy, 1000);
+
+// メインゲームループ（約60fps）
 const gameLoop = setInterval(() => {
   updatePlayers();
   updateBullets();
   updateEnemies();
-}, 30);
+}, 16);
 
-// 敵出現ループ
-const spawnLoop = setInterval(spawnEnemy, 1500);
-
-// タイマー処理（1分制限）
+// 制限時間カウントダウン
 const timerInterval = setInterval(() => {
   timeLeft--;
   timerElement.textContent = timeLeft;
-  if (timeLeft <= 0) endGame();
+  if (timeLeft <= 0) {
+    endGame();
+  }
 }, 1000);

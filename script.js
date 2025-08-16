@@ -71,7 +71,6 @@ function handleMenuKeyUnified(rawKey) {
   const key = String(rawKey || "").toLowerCase();
   if (!["q","w","e","a","s","d","z","x","c"].includes(key)) return;
 
-  // 可視化は常に点灯（MQTT・物理どちらも）
   flashKeyPanel(key);
 
   if (key === "a") {
@@ -92,7 +91,6 @@ function handleMenuKeyUnified(rawKey) {
    入力ソース 1) 物理キーボード
    ========================== */
 document.addEventListener("keydown", (e) => {
-  // 物理キーもカスタムイベントへ合流させる
   document.dispatchEvent(new CustomEvent("menu-virtual-key", {
     detail: { key: e.key, source: "keyboard" }
   }));
@@ -100,7 +98,6 @@ document.addEventListener("keydown", (e) => {
 
 /* ==========================
    入力ソース 2) MQTT（仮想）
-   - mqtt_receiver.js がこのイベントを発火します
    ========================== */
 document.addEventListener("menu-virtual-key", (e) => {
   handleMenuKeyUnified(e.detail?.key);
@@ -118,28 +115,30 @@ buttons.forEach((btn, i) => {
   });
 });
 
-// window.inputMapping の初期化
-window.inputMapping = null;
-
-// ボタンクリックで inputMapping をリセット
+/* ==========================
+   Reset Input Mapping
+   ========================== */
 document.addEventListener('DOMContentLoaded', () => {
   const resetBtn = document.getElementById('resetMappingBtn');
   resetBtn.addEventListener('click', () => {
-    window.inputMapping = null;
-    alert('Input mapping has been reset.');
+    window.inputMapping = [0,1,2,3,4,5,6,7,8]; // デフォルトに戻す
+    localStorage.removeItem("inputMapping");
+    alert('Input mapping has been reset to default.');
     console.log('window.inputMapping =', window.inputMapping);
   });
-});
 
+  // ページ入室時に音楽停止を指示
+  if (window.mqttClient && window.mqttClient.connected) {
+    window.mqttClient.publish("dance/playSong", "0");
+    console.log("🛑 Sent stop music command");
+  } else {
+    console.warn("⚠️ MQTT client not ready, cannot stop music");
+  }
+});
 
 /* ==========================
    初期処理
    ========================== */
 updateHighlight();
 fetchPlayerCount();
-
-// ※ マッピング初期化は必要なときだけ実施してください
-// localStorage.removeItem("inputMapping");
-// console.log("🗑️ inputMapping deleted");
-
 setInterval(fetchPlayerCount, 10000);

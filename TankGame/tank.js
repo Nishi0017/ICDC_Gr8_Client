@@ -273,15 +273,12 @@ function showWinner(text) {
   winText.innerText = text;
   winText.style.opacity = 1;
 
-  const sound = document.getElementById("winSound");
-  sound.currentTime = 0;
-  sound.play();
-
+  // ★ 3秒後に finish.html へ遷移
   setTimeout(() => {
-    alert(text);
-    location.reload();
+    window.location.href = "../finish/finish.html";
   }, 3000);
 }
+
 
 // ==========================
 // ゲーム開始

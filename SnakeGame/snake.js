@@ -184,9 +184,15 @@ function showRanking() {
       setTimeout(() => div.classList.add("show"), 50);
     }, index * 1200);
   });
+
+  // ★ 順位表示完了後に数秒待ってfinish.htmlへ遷移
+  const totalDisplayTime = displayOrder.length * 1200 + 2000; // 2秒余裕
+  setTimeout(() => {
+    window.location.href = "../finish/finish.html";
+  }, totalDisplayTime);
+
 }
 
-// カウントダウンを表示してからゲーム開始
 // カウントダウンを表示してからゲーム開始
 function countdownAndStart(playerNames) {
   let count = 3;
