@@ -188,7 +188,7 @@ function showRanking() {
   // ★ 順位表示完了後に数秒待ってfinish.htmlへ遷移
   const totalDisplayTime = displayOrder.length * 1200 + 2000; // 2秒余裕
   setTimeout(() => {
-    window.location.href = "../finish/finish.html";
+    window.location.href = "../Finish/finish.html";
   }, totalDisplayTime);
 
 }
