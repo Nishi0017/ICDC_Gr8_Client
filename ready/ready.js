@@ -57,6 +57,10 @@ client.on("connect", () => {
   const musicMap = {
     'APT': 1,
     'SPICY': 2,
+    'PASSO BEM SOLTO': 3,
+    'just keep watching': 4,
+    'Dynamite': 5,
+    'Lost Sky': 6
   };
 
   const musicName = urlParams.get('music');

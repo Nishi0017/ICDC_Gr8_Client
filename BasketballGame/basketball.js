@@ -39,8 +39,10 @@ let players = playerNames.map((name, index) => ({
   moving: false,
   direction: 1,
   score: 0,
-  controls: { move: index === 0 ? "KeyQ" : index === 1 ? "KeyE" : index === 2 ? "KeyS" : "KeyZ",
-              action: index === 0 ? "KeyW" : index === 1 ? "KeyA" : index === 2 ? "KeyD" : "KeyX" },
+  controls: { 
+    move: index === 0 ? "KeyQ" : index === 1 ? "KeyE" : index === 2 ? "KeyS" : "KeyZ",
+    action: index === 0 ? "KeyW" : index === 1 ? "KeyA" : index === 2 ? "KeyD" : "KeyX" 
+  },
   phase: "moveX",
   angle: Math.PI / 4,
   ball: null,
@@ -92,7 +94,7 @@ window.addEventListener("resize", () => {
   updateSensors();
 });
 
-/* 操作 */
+/* --- 操作（キーボード入力） --- */
 document.addEventListener("keydown", (e) => {
   if (gameOver) return;
   players.forEach(p => {
@@ -127,6 +129,44 @@ document.addEventListener("keyup", (e) => {
     }
     if (e.code === p.controls.action) {
       p.sKeyPressed = false;
+    }
+  });
+});
+
+/* --- 操作（MQTT入力対応） --- */
+document.addEventListener("menu-virtual-key", (e) => {
+  if (gameOver) return;
+  const key = e.detail.key.toUpperCase(); // "q" → "Q"
+  const isPressed = e.detail.states.includes(1); // どこかが1なら押された状態
+
+  players.forEach(p => {
+    // Moveキー
+    if (key === p.controls.move.replace("Key", "").toUpperCase()) {
+      p.moving = isPressed;
+    }
+
+    // Actionキー
+    if (key === p.controls.action.replace("Key", "").toUpperCase()) {
+      if (isPressed && !p.sKeyPressed) {
+        p.sKeyPressed = true;
+        if (p.phase === "moveX") {
+          p.moving = false;
+          p.phase = "angleSelect";
+        } else if (p.phase === "angleSelect") {
+          const clamped = Math.max(0.01, Math.min(Math.PI - 0.01, p.angle));
+          p.angle = clamped;
+          p.ball = {
+            x: p.x + p.width / 2,
+            y: p.y,
+            vx: 10 * Math.cos(p.angle),
+            vy: -10 * Math.sin(p.angle),
+            radius: 20,
+          };
+          p.phase = "shoot";
+        }
+      } else if (!isPressed) {
+        p.sKeyPressed = false;
+      }
     }
   });
 });
@@ -190,6 +230,9 @@ function update() {
 
   if (messageTimer > 0) {
     messageTimer--;
+    messageAlpha = Math.min(1, messageAlpha + 0.05);
+  } else {
+    messageAlpha = Math.max(0, messageAlpha - 0.05);
   }
 }
 
@@ -200,21 +243,6 @@ function resetPlayer(p) {
 
 /* メッセージ用アルファ値 */
 let messageAlpha = 0;
-
-/* 更新処理 */
-function update() {
-  updateSensors();
-  players.forEach(p => {
-    // ...既存処理...
-  });
-
-  if (messageTimer > 0) {
-    messageTimer--;
-    messageAlpha = Math.min(1, messageAlpha + 0.05);
-  } else {
-    messageAlpha = Math.max(0, messageAlpha - 0.05);
-  }
-}
 
 /* 描画処理 */
 function draw() {
@@ -300,7 +328,6 @@ function draw() {
     });
   }
 }
-
 
 /* メインループ */
 function gameLoop() {

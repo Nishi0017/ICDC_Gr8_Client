@@ -352,7 +352,7 @@ function validateName(name) {
 }
 
 function displayMusicName(key) {
-  const map = { 'APT': 'APT', 'SPICY': 'SPICY'};
+  const map = { 'APT': 'APT', 'Spicy': 'Spics', 'PASSO BEM SOLTO': 'PASSO BEM SOLTO', 'just keep watching': 'just keep watching', 'Dynamite': 'Dynamite', 'Lost Sky': 'Lost Sky'};
   return map[key] || key;
 }
 
